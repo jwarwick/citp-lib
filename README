@@ -1,5 +1,9 @@
 jwarwick, 27 February 2009
 
 Library to allow easy use of the Controller Interface Transport Protcol (CITP) used in the Capture lighting visualizer.
+Built on the 4.4.x Qt framework.
 
 See http://www.citp-protocol.org/
+
+
+
