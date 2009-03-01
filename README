@@ -1,3 +1,5 @@
 jwarwick, 27 February 2009
 
 Library to allow easy use of the Controller Interface Transport Protcol (CITP) used in the Capture lighting visualizer.
+
+See http://www.citp-protocol.org/
