@@ -1,1 +1,5 @@
 *~
+*.o
+moc_*
+Makefile
+debug/*
