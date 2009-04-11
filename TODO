@@ -1,2 +1,4 @@
 + figure out emacs tag to mark header files a c++-mode
 + figure out how to set tab behavior in emacs, retabbify files
++ figure out macro to insert copyright
++ figure out emacs indenting modes

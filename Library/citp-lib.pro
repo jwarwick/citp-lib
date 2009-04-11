@@ -12,6 +12,10 @@ DESTDIR = ../debug
 #	CONFIG += x86
 #}
 
-HEADERS += ./citp-lib.h \
+HEADERS += citp-lib.h \
+           PacketCreator.h \
+           PeerInformationSocket.h \
 
-SOURCES += ./citp-lib.cpp \
+SOURCES += citp-lib.cpp \
+           PacketCreator.cpp \
+           PeerInformationSocket.cpp \

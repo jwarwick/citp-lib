@@ -16,8 +16,11 @@ class CITPLIB_EXPORT CITPLib : public QObject, public QScriptable
 {
   Q_OBJECT    
 public:
-  CITPLib();
+  CITPLib(QObject *parent = 0);
   virtual ~CITPLib();
+
+  void createPeerInformationSocket(const QString &name, const QString &state);
+
 };
 
 #endif // _CITPLIB_H_
