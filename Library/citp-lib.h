@@ -12,6 +12,8 @@
 #include <QObject>
 #include <QScriptable>
 
+class PeerInformationSocket;
+
 class CITPLIB_EXPORT CITPLib : public QObject, public QScriptable
 {
   Q_OBJECT    
@@ -19,7 +21,12 @@ public:
   CITPLib(QObject *parent = 0);
   virtual ~CITPLib();
 
-  void createPeerInformationSocket(const QString &name, const QString &state);
+  bool createPeerInformationSocket(const QString &name, const QString &state);
+
+private:
+  
+  PeerInformationSocket *m_peerSocket;
+
 
 };
 

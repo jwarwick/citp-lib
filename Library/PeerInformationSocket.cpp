@@ -1,8 +1,20 @@
 #include "PeerInformationSocket.h"
 
 #include <QTimer>
+#include <QtDebug>
 
+#include "CITPDefines.h"
 #include "PacketCreator.h"
+
+#ifdef Q_OS_WIN
+  #include <winsock2.h>
+  #include <ws2tcpip.h>
+#else
+  #include <sys/types.h>
+  #include <sys/socket.h>
+  #include <netinet/in.h>
+  #include <arpa/inet.h>
+#endif
 
 #define TRANSMIT_INTERVAL_MS  5000
 
@@ -37,9 +49,26 @@ bool PeerInformationSocket::init(const QString &name, const QString &state)
   m_name = name;
   m_state = state;
 
-  // close socket if already opened
+  // XXX - close socket if already opened?
 
   // create multicast socket, bind to port
+  if (!bind(CITP_PINF_MULTICAST_PORT, ShareAddress | ReuseAddressHint))
+    {
+      qDebug() << "Multicast bind failed";
+      return false;
+    }
+  
+  struct ip_mreq mreq;
+  mreq.imr_multiaddr.s_addr = inet_addr(CITP_PINF_MULTICAST_IP);
+  mreq.imr_interface.s_addr = INADDR_ANY;
+  int r = ::setsockopt(socketDescriptor(), IPPROTO_IP, IP_ADD_MEMBERSHIP,
+		       (const char *)&mreq, sizeof(struct ip_mreq));
+  if (0 != r)
+    {
+      qDebug() << "setsockopt failed, r:" << r;
+      return false;
+    }
+
 
   delete m_packetBuffer;
 
