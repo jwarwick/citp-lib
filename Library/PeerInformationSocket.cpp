@@ -26,7 +26,7 @@ PeerInformationSocket::PeerInformationSocket(QObject *parent)
     m_packetBufferLen(0)
 {
 
-  connect(this, SIGNAL(readReady()),
+  connect(this, SIGNAL(readyRead()),
 	  this, SLOT(handleReadReady()));
 
   m_timer = new QTimer(this);
@@ -75,6 +75,7 @@ bool PeerInformationSocket::init(const QString &name, const QString &state)
   m_packetBuffer = PacketCreator::createPLocPacket(PacketCreator::LightingConsole, name, state, m_packetBufferLen);
   if (!m_packetBuffer)
     {
+      m_packetBufferLen = 0;
       return false;
     }
 
@@ -89,6 +90,16 @@ bool PeerInformationSocket::init(const QString &name, const QString &state)
 
 void PeerInformationSocket::transmitPLoc()
 {
+  if (m_packetBuffer && m_packetBufferLen > 0)
+    {
+      QHostAddress addr(CITP_PINF_MULTICAST_IP);
+      qint64 ret = writeDatagram((const char*)m_packetBuffer, m_packetBufferLen, 
+				 addr, CITP_PINF_MULTICAST_PORT);
+      if (-1 == ret)
+	{
+	  qDebug() << "Failed to send multicast packet:" << error();
+	}
+    }
 }
 
 void PeerInformationSocket::handleReadReady()
