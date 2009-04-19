@@ -26,21 +26,25 @@ typedef unsigned char ucs1;
 // Content Type cookies
 //
 
-#define COOKIE_CITP       0x43495450    // 'CITP'
+//#define COOKIE_CITP       0x43495450    // 'CITP'
+#define COOKIE_CITP       0x50544943    // 'CITP'
 
-#define COOKIE_PINF       0x50494e46    // 'PINF'
+//#define COOKIE_PINF       0x50494e46    // 'PINF'
+#define COOKIE_PINF       0x464e4950    // 'PINF'
 #define COOKIE_PINF_PNAM  0x504e616d    // 'PNam'
-#define COOKIE_PINF_PLOC  0x504c6f63    // 'PLoc'
+//#define COOKIE_PINF_PLOC  0x504c6f63    // 'PLoc'
+#define COOKIE_PINF_PLOC  0x636f4c50    // 'PLoc'
 
 #define COOKIE_SDMX       0x53444d58    // 'SDMX'
 #define COOKIE_SDMX_ENID  0x456e4964    // 'EnId'
 #define COOKIE_SDMX_UNAM  0x554e616d    // 'UNam'
 #define COOKIE_SDMX_CHBK  0x4368426b    // 'ChBk'
 
+#pragma pack(1)
+
 //
 // CITP, Base Layer
 //
-
 struct CITP_Header 
 { 
   uint32      Cookie;                        // Set to "CITP".      
@@ -72,7 +76,7 @@ struct CITP_PINF_Header
 struct CITP_PINF_PNam 
 { 
   CITP_PINF_Header  CITPPINFHeader;   // The CITP PINF header. PINF ContentType is "PNam".          
-  ucs1              Name[];           // The display name of the peer (null terminated). 
+  //ucs1              Name[];           // The display name of the peer (null terminated). 
                                       // This could be anything from a 
 				      // user defined alias for the peer of the name of the 
                                       // product, or a combination. 
@@ -84,11 +88,11 @@ struct CITP_PINF_PLoc
   CITP_PINF_Header  CITPPINFHeader;     // The CITP PINF header. PINF ContentType is "PLoc". 
   uint16            ListeningTCPPort;   // The port on which the peer is listening for 
                                         // incoming TCP connections. 0 if not listening. 
-  ucs1              Type[];             // Can be "LightingConsole", "MediaServer", 
+  //ucs1              Type[];             // Can be "LightingConsole", "MediaServer", 
                                         // "Visualizer" or "OperationHub". 
-  ucs1              Name[];             // The display name of the peer. Corresponds to the 
+  //ucs1              Name[];             // The display name of the peer. Corresponds to the 
                                         //     PINF/PNam/Name field. 
-  ucs1              State[];            // The display state of the peer. This can be any 
+  //ucs1              State[];            // The display state of the peer. This can be any 
                                         //     descriptive string presentable to the user such 
                                         //     as "Idle", "Running" etc. 
 };
@@ -108,7 +112,7 @@ struct CITP_SDMX_Header
 struct CITP_SDMX_EnId 
 { 
   CITP_SDMX_Header  CITPSDMXHeader;    // CITP SDMX header. SDMX ContentType is "EnId". 
-  ucs1              Identifier[];      // Encryption scheme identifier. 
+  //ucs1              Identifier[];      // Encryption scheme identifier. 
 }; 
 
 // Universe Name message
@@ -116,7 +120,7 @@ struct CITP_SDMX_UNam
 { 
   CITP_SDMX_Header  CITPSDMXHeader;    // CITP SDMX header. SDMX ContentType is "UNam". 
   uint8             UniverseIndex;     // 0-based index of the universe. 
-  ucs1              UniverseName[];    // Name of the universe. 
+  //ucs1              UniverseName[];    // Name of the universe. 
 }; 
 
 // Channel Block message
@@ -134,7 +138,7 @@ struct CITP_SDMX_ChBk
 struct CITP_SDMX_SXSr
 { 
   CITP_SDMX_Header  CITPSDMXHeader;       // CITP SDMX header. SDMX ContentType is "SXSr". 
-  ucs1              ConnectionString[];   // DMX-source connection string. See DMX 
+  //ucs1              ConnectionString[];   // DMX-source connection string. See DMX 
                                           // Connection Strings in Definitions. 
 };
 

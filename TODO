@@ -2,3 +2,5 @@
 + figure out how to set tab behavior in emacs, retabbify files
 + figure out macro to insert copyright
 + figure out emacs indenting modes
+
++ let user specify network interface to use

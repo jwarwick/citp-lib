@@ -2,6 +2,8 @@
 
 #include "CITPDefines.h"
 
+#include <QtDebug>
+
 PacketCreator::PacketCreator(QObject *parent)
   : QObject(parent)
 {
@@ -49,14 +51,14 @@ unsigned char * PacketCreator::createPLocPacket(PLocType plocType,
   packet->CITPPINFHeader.CITPHeader.Reserved[1] = 0x00; 
   packet->CITPPINFHeader.CITPHeader.MessageSize = bufferLen;
   packet->CITPPINFHeader.CITPHeader.MessagePartCount = 0x01;
-  packet->CITPPINFHeader.CITPHeader.MessagePart = 0x00;
+  packet->CITPPINFHeader.CITPHeader.MessagePart = 0x01; // XXX - doc says 0-based?
   packet->CITPPINFHeader.CITPHeader.ContentType = COOKIE_PINF;
 
   // PINF header
   packet->CITPPINFHeader.ContentType = COOKIE_PINF_PLOC;
 
   // PLoc data
-  packet->ListeningTCPPort = 0;
+  packet->ListeningTCPPort = 0x00;
   
   // type
   int offset = sizeof(struct CITP_PINF_PLoc);
