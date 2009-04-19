@@ -15,7 +15,9 @@ DESTDIR = ../debug
 HEADERS += citp-lib.h \
            PacketCreator.h \
            PeerInformationSocket.h \
+           Peer.h \
 
 SOURCES += citp-lib.cpp \
            PacketCreator.cpp \
            PeerInformationSocket.cpp \
+           Peer.cpp \

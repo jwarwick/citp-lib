@@ -5,6 +5,7 @@
 
 #include "CITPDefines.h"
 #include "PacketCreator.h"
+#include "Peer.h"
 
 #ifdef Q_OS_WIN
   #include <winsock2.h>
@@ -104,4 +105,103 @@ void PeerInformationSocket::transmitPLoc()
 
 void PeerInformationSocket::handleReadReady()
 {
+  while (hasPendingDatagrams()) 
+    {
+      QByteArray datagram;
+      datagram.resize(pendingDatagramSize());
+      QHostAddress sender;
+      quint16 senderPort;
+
+      if (-1 != readDatagram(datagram.data(), datagram.size(),
+			     &sender, &senderPort))
+	{
+	  processPacket(sender, datagram);
+	}
+    }
+}
+
+void PeerInformationSocket::processPacket(const QHostAddress &address, const QByteArray &packetArray)
+{
+  const char *data = packetArray.constData();
+  CITP_PINF_PLoc *packet = (CITP_PINF_PLoc*)data;
+
+  // CITP header
+  if (packet->CITPPINFHeader.CITPHeader.Cookie != COOKIE_CITP)
+    {
+      return;
+    }
+
+  if (packet->CITPPINFHeader.CITPHeader.VersionMajor != 0x01)
+    {
+      return;
+    }
+
+  if (packet->CITPPINFHeader.CITPHeader.VersionMinor != 0x00)
+    {
+      return;
+    }
+  //packet->CITPPINFHeader.CITPHeader.Reserved[0] = 0x00;
+  //packet->CITPPINFHeader.CITPHeader.Reserved[1] = 0x00; 
+  //packet->CITPPINFHeader.CITPHeader.MessageSize = bufferLen;
+  //packet->CITPPINFHeader.CITPHeader.MessagePartCount = 0x01;
+  //packet->CITPPINFHeader.CITPHeader.MessagePart = 0x01; // XXX - doc says 0-based?
+  
+  if (packet->CITPPINFHeader.CITPHeader.ContentType != COOKIE_PINF)
+    {
+      return;
+    }
+
+  // PINF header
+  if (packet->CITPPINFHeader.ContentType != COOKIE_PINF_PLOC)
+    {
+      return;
+    }
+
+  // PLoc data
+  quint16 listeningPort = packet->ListeningTCPPort;
+  if (0 == listeningPort)
+    {
+      return;
+    }
+  
+  // type
+  int offset = sizeof(struct CITP_PINF_PLoc);
+  QString typeString(packetArray.constData()+offset);
+  //memcpy(buffer + offset, typeString.toAscii().constData(), typeString.size());
+  
+  // name
+  offset += typeString.size() + 1;
+  QString nameString(packetArray.constData()+offset);
+  //memcpy(buffer + offset, name.toAscii().constData(), name.size());
+
+  // state
+  offset += nameString.size() + 1;
+  QString stateString(packetArray.constData()+offset);
+  //memcpy(buffer + offset, state.toAscii().constData(), state.size());
+
+  addPeer(address, listeningPort, typeString, nameString, stateString);
+
+}
+
+void PeerInformationSocket::addPeer(const QHostAddress &host, quint16 listeningPort, const QString &type, 
+				    const QString &name, const QString &state)
+{
+  // check if we already have this peer
+  foreach (const Peer *peer, m_peerList)
+    {
+      if (peer)
+	{
+	  if (peer->m_host == host && peer->m_listeningPort == listeningPort)
+	    {
+	      return;
+	    }
+	}
+    }
+
+  // add the newly discovered peer
+  Peer *newPeer = new Peer(host, listeningPort, type, name, state, this);
+  Q_CHECK_PTR(newPeer);
+  m_peerList.append(newPeer);
+
+  emit peersUpdated();
 }

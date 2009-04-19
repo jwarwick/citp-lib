@@ -4,6 +4,7 @@
 #include <QUdpSocket>
 
 class QTimer;
+class Peer;
 
 class PeerInformationSocket : public QUdpSocket
 {
@@ -30,6 +31,15 @@ private:
 
   unsigned char *m_packetBuffer;
   int m_packetBufferLen;
+
+  void processPacket(const QHostAddress &sender, const QByteArray &packet);
+
+  void addPeer(const QHostAddress &host, quint16 listeningPort, const QString &type, 
+       const QString &name, const QString &state);
+  QList<Peer*> m_peerList;
+
+ signals:
+  void peersUpdated();
 };
 
 #endif // _PEERINFORMATIONSOCKET_H_
