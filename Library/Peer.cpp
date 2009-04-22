@@ -9,6 +9,7 @@ Peer::Peer(const QHostAddress &host, quint16 listeningPort, const QString &type,
     m_name(name),
     m_state(state)
 {
+  qDebug() << "Peer::Peer(), name=" << m_name;
 }
 
 Peer::~Peer()

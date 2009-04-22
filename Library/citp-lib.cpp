@@ -8,6 +8,8 @@ CITPLib::CITPLib(QObject *parent)
 {
   m_peerSocket = new PeerInformationSocket(this);
   Q_CHECK_PTR(m_peerSocket);
+  connect(m_peerSocket, SIGNAL(peersUpdated()),
+	  this, SIGNAL(peersUpdated()));
 
 }
 
@@ -25,3 +27,13 @@ bool CITPLib::createPeerInformationSocket(const QString &name, const QString &st
   return m_peerSocket->init(name, state);
 }
 
+bool CITPLib::listPeers(QList<PeerDescription*> &peerList)
+{
+  if (!m_peerSocket)
+    {
+      return false;
+    }
+
+  qDebug() << "citplib::listPeers()";
+  return m_peerSocket->listPeers(peerList);
+}

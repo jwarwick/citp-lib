@@ -3,6 +3,8 @@
 #include <QTimer>
 #include <QtDebug>
 
+#include "citp-lib.h"
+
 #include "CITPDefines.h"
 #include "PacketCreator.h"
 #include "Peer.h"
@@ -179,6 +181,9 @@ void PeerInformationSocket::processPacket(const QHostAddress &address, const QBy
   QString stateString(packetArray.constData()+offset);
   //memcpy(buffer + offset, state.toAscii().constData(), state.size());
 
+  // XXX - these strings are going out of scope because they are implicitly shared
+  // from the original buffer
+
   addPeer(address, listeningPort, typeString, nameString, stateString);
 
 }
@@ -198,10 +203,49 @@ void PeerInformationSocket::addPeer(const QHostAddress &host, quint16 listeningP
 	}
     }
 
+  qDebug() << "Adding new peer to list:" << host.toString() << listeningPort << type << name << state;
+
   // add the newly discovered peer
   Peer *newPeer = new Peer(host, listeningPort, type, name, state, this);
   Q_CHECK_PTR(newPeer);
   m_peerList.append(newPeer);
 
+  qDebug() << "added peer, peer list size:" << m_peerList.size();
+
+  Peer *p = m_peerList.at(0);
+  qDebug() << "new peer name:" << p->m_type;
+
   emit peersUpdated();
 }
+
+bool PeerInformationSocket::listPeers(QList<struct PeerDescription*> &peerList)
+{
+
+  qDebug() << "PeerInfoSocket::listPeers()";
+
+  qDebug() << "peer list size:" << m_peerList.size();
+  
+  foreach (const Peer *peer, m_peerList)
+    {
+      if (!peer)
+	{
+	  continue;
+	}
+
+      
+
+      //qDebug() << "Considering peer:" << peer;
+
+      //PeerDescription *desc = new PeerDescription;
+      //desc->m_ip = peer->m_host;
+      //desc->m_port = peer->m_listeningPort;
+      //desc->m_name = peer->m_name;
+      //desc->m_state = peer->m_state;
+      //desc->m_type = peer->m_type;
+
+      //peerList.append(desc);
+    }
+
+  return true;
+}
+    

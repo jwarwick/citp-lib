@@ -16,6 +16,9 @@ public:
 
 private slots:
   void on_actionExit_triggered();
+  void on_connectButton_clicked();
+
+  void handlePeersUpdated();
 
 private:
   Ui::SampleConsole ui;

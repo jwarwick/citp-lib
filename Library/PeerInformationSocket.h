@@ -6,6 +6,8 @@
 class QTimer;
 class Peer;
 
+struct PeerDescripton;
+
 class PeerInformationSocket : public QUdpSocket
 {
   Q_OBJECT
@@ -16,8 +18,8 @@ public:
   bool init(const QString &name, const QString &state);
 
   // XXX - need updateState(QString)
-  // XXX - need way to get list of current known peers (name, state, type, ip, port)
-						      
+
+  bool listPeers(QList<struct PeerDescription*> &peerList);
 
 private slots:
   void transmitPLoc();
