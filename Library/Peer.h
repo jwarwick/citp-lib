@@ -8,17 +8,22 @@ class Peer : public QObject
 {
 Q_OBJECT
 public:
-  Peer(const QHostAddress &host, quint16 listeningPort, const QString &type, 
-       const QString &name, const QString &state, QObject *parent=0);
+  Peer(const QString &host, quint16 listeningPort, const QString &peerType, 
+       const QString &peerName, const QString &peerState, QObject *parent=0);
+  //Peer(QObject *parent=0);
   virtual ~Peer();
 
-  QString peerName() const;
+  
+  //QString peerName() const;
 
-  QHostAddress m_host;
+  QString m_peerType;
+  QString m_peerState;
+  QString m_peerName;
+
+  QString m_host;
   quint16 m_listeningPort;
-  QString m_type;
-  QString m_name;
-  QString m_state;
+
+
 };
 
 #endif _PEER_H_

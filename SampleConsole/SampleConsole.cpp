@@ -14,6 +14,7 @@ SampleConsole::SampleConsole(QWidget *parent)
   connect(m_citp, SIGNAL(peersUpdated()),
 	  this, SLOT(handlePeersUpdated()));
 
+  qDebug() << "SampleConsole: about to create peer info socket";
   if (!m_citp->createPeerInformationSocket("Sample Console", "Testing..."))
     {
       qDebug() << "CreatePeerInformationSocket failed";

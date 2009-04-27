@@ -17,7 +17,7 @@ class PeerInformationSocket;
 
 struct PeerDescription
 {
-  QHostAddress m_ip;
+  QString m_ip;
   quint16 m_port;
   QString m_name;
   QString m_state;

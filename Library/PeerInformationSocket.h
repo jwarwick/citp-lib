@@ -36,7 +36,7 @@ private:
 
   void processPacket(const QHostAddress &sender, const QByteArray &packet);
 
-  void addPeer(const QHostAddress &host, quint16 listeningPort, const QString &type, 
+  void addPeer(const QString &host, quint16 listeningPort, const QString &typeString, 
        const QString &name, const QString &state);
   QList<Peer*> m_peerList;
 
