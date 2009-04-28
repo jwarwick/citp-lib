@@ -14,15 +14,7 @@
 #include <QHostAddress>
 
 class PeerInformationSocket;
-
-struct PeerDescription
-{
-  QString m_ip;
-  quint16 m_port;
-  QString m_name;
-  QString m_state;
-  QString m_type;
-};
+class Peer;
 
 class CITPLIB_EXPORT CITPLib : public QObject, public QScriptable
 {
@@ -33,7 +25,7 @@ public:
 
   bool createPeerInformationSocket(const QString &name, const QString &state);
 
-  bool listPeers(QList<PeerDescription*> &peerList);
+  bool listPeers(QList<Peer*> &peerList);
 
 private:
   

@@ -74,3 +74,40 @@ unsigned char * PacketCreator::createPLocPacket(PLocType plocType,
 
   return buffer;
 }
+
+// returns NULL on error. bufferLen is the length of the returned buffer.
+unsigned char * PacketCreator::createUNamPacket(quint8 universeIndex, 
+						const QString &name,
+						int &bufferLen)
+{
+  // figure out the packet size, all strings need to be NULL terminated
+  bufferLen = sizeof(struct CITP_SDMX_UNam) + name.size() + 1;
+  
+  unsigned char *buffer = new unsigned char[bufferLen];
+  memset(buffer, 0, bufferLen);
+
+  CITP_SDMX_UNam *packet = (CITP_SDMX_UNam *)buffer;
+
+  // CITP header
+  packet->CITPSDMXHeader.CITPHeader.Cookie = COOKIE_CITP;
+  packet->CITPSDMXHeader.CITPHeader.VersionMajor = 0x01;
+  packet->CITPSDMXHeader.CITPHeader.VersionMinor = 0x00;
+  packet->CITPSDMXHeader.CITPHeader.Reserved[0] = 0x00;
+  packet->CITPSDMXHeader.CITPHeader.Reserved[1] = 0x00; 
+  packet->CITPSDMXHeader.CITPHeader.MessageSize = bufferLen;
+  packet->CITPSDMXHeader.CITPHeader.MessagePartCount = 0x01;
+  packet->CITPSDMXHeader.CITPHeader.MessagePart = 0x01; // XXX - doc says 0-based?
+  packet->CITPSDMXHeader.CITPHeader.ContentType = COOKIE_SDMX;
+
+  // SDMX header
+  packet->CITPSDMXHeader.ContentType = COOKIE_SDMX_UNAM;
+
+  // UNam data
+  packet->UniverseIndex = universeIndex;
+  
+  // name
+  int offset = sizeof(struct CITP_SDMX_UNam);
+  memcpy(buffer + offset, name.toAscii().constData(), name.size());
+
+  return buffer;
+}

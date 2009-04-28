@@ -35,9 +35,11 @@ typedef unsigned char ucs1;
 //#define COOKIE_PINF_PLOC  0x504c6f63    // 'PLoc'
 #define COOKIE_PINF_PLOC  0x636f4c50    // 'PLoc'
 
-#define COOKIE_SDMX       0x53444d58    // 'SDMX'
+//#define COOKIE_SDMX       0x53444d58    // 'SDMX'
+#define COOKIE_SDMX       0x584d4453    // 'SDMX'
 #define COOKIE_SDMX_ENID  0x456e4964    // 'EnId'
-#define COOKIE_SDMX_UNAM  0x554e616d    // 'UNam'
+//#define COOKIE_SDMX_UNAM  0x554e616d    // 'UNam'
+#define COOKIE_SDMX_UNAM  0x6d614e55    // 'UNam'
 #define COOKIE_SDMX_CHBK  0x4368426b    // 'ChBk'
 
 #pragma pack(1)

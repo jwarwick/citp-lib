@@ -102,8 +102,6 @@ bool PeerInformationSocket::init(const QString &name, const QString &state)
 
 void PeerInformationSocket::transmitPLoc()
 {
-  qDebug() << "About to transmitPLoc";
-
   if (m_packetBuffer && m_packetBufferLen > 0)
     {
       QHostAddress addr(CITP_PINF_MULTICAST_IP);
@@ -174,7 +172,8 @@ void PeerInformationSocket::processPacket(const QHostAddress &address, const QBy
   quint16 listeningPort = packet->ListeningTCPPort;
   if (0 == listeningPort)
     {
-      return;
+      // XXX - uncomment if we don't want non-listeners
+      //return;
     }
   
   // type
@@ -195,10 +194,11 @@ void PeerInformationSocket::processPacket(const QHostAddress &address, const QBy
   // XXX - these strings are going out of scope because they are implicitly shared
   // from the original buffer
 
-  addPeer(address.toString(), listeningPort, typeString, nameString, stateString);
+  addPeer(address, listeningPort, typeString, nameString, stateString);
 }
 
-void PeerInformationSocket::addPeer(const QString &host, quint16 listeningPort, const QString &typeString, 
+void PeerInformationSocket::addPeer(const QHostAddress &host, quint16 listeningPort, 
+				    const QString &typeString, 
 				    const QString &name, const QString &state)
 {
   // check if we already have this peer
@@ -206,22 +206,23 @@ void PeerInformationSocket::addPeer(const QString &host, quint16 listeningPort, 
     {
       if (peer)
 	{
-	  if (peer->m_host == host && peer->m_listeningPort == listeningPort)
+	  if (peer->peerHost() == host.toString() && peer->peerListeningPort() == listeningPort)
 	    {
 	      return;
 	    }
 	}
     }
 
-  qDebug() << "Adding new peer to list:" << host << listeningPort << typeString << name << state;
+  //  qDebug() << "Adding new peer to list:" << host.toString() << listeningPort << typeString << name << state;
 
   // add the newly discovered peer
-  Peer *newPeer = new Peer(host, listeningPort, typeString, name, state);
+  Peer *newPeer = new Peer(host, listeningPort, name, state);
   Q_CHECK_PTR(newPeer);
   m_peerList.append(newPeer);
 
   qDebug() << "added peer, peer list size:" << m_peerList.size();
 
+  /*
   const Peer *p = m_peerList.at(0);
   if (p)
     {
@@ -236,34 +237,14 @@ void PeerInformationSocket::addPeer(const QString &host, quint16 listeningPort, 
     {
       qDebug() << "Peer is null....";
     }
-    
+  */
+
     emit peersUpdated();
 }
 
-bool PeerInformationSocket::listPeers(QList<struct PeerDescription*> &peerList)
+bool PeerInformationSocket::listPeers(QList<Peer*> &peerList)
 {
-
-  qDebug() << "PeerInfoSocket::listPeers()";
-
-  qDebug() << "peer list size:" << m_peerList.size();
-  
-  foreach (const Peer *peer, m_peerList)
-    {
-      if (!peer)
-	{
-	  continue;
-	}
-
-      PeerDescription *desc = new PeerDescription;
-      desc->m_ip = peer->m_host;
-      desc->m_port = peer->m_listeningPort;
-      desc->m_name = peer->m_peerName;
-      desc->m_state = peer->m_peerState;
-      desc->m_type = peer->m_peerType;
-
-      peerList.append(desc);
-    }
-
+  peerList = m_peerList;
   return true;
 }
     

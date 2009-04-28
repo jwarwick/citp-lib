@@ -22,6 +22,10 @@ public:
   static unsigned char * createPLocPacket(PLocType plocType, const QString &name, 
 					  const QString &state, int &bufferLen);
 
+  // returns NULL on error. bufferLen is the length of the returned buffer.
+  static unsigned char * createUNamPacket(quint8 universeIndex, const QString &name,
+					  int &bufferLen);
+
 };
 
 #endif // _PACKETCREATOR_H_

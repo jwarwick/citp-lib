@@ -1,6 +1,7 @@
 #include "SampleConsole.h"
 
 #include "citp-lib.h"
+#include "Peer.h"
 
 #include <QtDebug>
 
@@ -14,7 +15,6 @@ SampleConsole::SampleConsole(QWidget *parent)
   connect(m_citp, SIGNAL(peersUpdated()),
 	  this, SLOT(handlePeersUpdated()));
 
-  qDebug() << "SampleConsole: about to create peer info socket";
   if (!m_citp->createPeerInformationSocket("Sample Console", "Testing..."))
     {
       qDebug() << "CreatePeerInformationSocket failed";
@@ -34,7 +34,7 @@ void SampleConsole::handlePeersUpdated()
 {
   qDebug() << "handlePeersUpdated()";
 
-  QList<struct PeerDescription*> peerList;
+  QList<Peer*> peerList;
   if (m_citp)
     {
       if (!m_citp->listPeers(peerList))
@@ -47,15 +47,15 @@ void SampleConsole::handlePeersUpdated()
   qDebug() << "Peer list length:" << peerList.size();
 
   ui.textEdit->appendPlainText("\n\nPeer List Updated:");
-  foreach (struct PeerDescription *peer, peerList)
+  foreach (const Peer *peer, peerList)
     {
       if (!peer)
 	{
 	  continue;
 	}
 
-      QString desc = tr("\t%1 %2 %3 %4:%5\n").arg(peer->m_name).arg(peer->m_state).arg(peer->m_type)
-	.arg(peer->m_ip.toString()).arg(peer->m_port);
+      QString desc = tr("\t%1, %2 (%3:%4)\n").arg(peer->peerName()).arg(peer->peerState())
+	.arg(peer->peerHost()).arg(peer->peerListeningPort());
       ui.textEdit->appendPlainText(desc);
 
     }
@@ -64,5 +64,31 @@ void SampleConsole::handlePeersUpdated()
 
 void SampleConsole::on_connectButton_clicked()
 {
+  QList<Peer*> peers;
+  m_citp->listPeers(peers);
+  if (2 != peers.size())
+    {
+      qDebug() << "not two peers";
+      return;
+    }
+
+  m_visualizer = peers.at(1);
+  if (!m_visualizer->connectToPeer())
+    {
+      qDebug() << "ConnectToPeer failed";
+      return;
+    }
+}
+
+void SampleConsole::on_sendNameButton_clicked()
+{
+  if (m_visualizer)
+    {
+      if (!m_visualizer->sendUniverseName(0, "universe 0"))
+	{
+	  qDebug() << "send universe name failed";
+	  return;
+	}
+    }
 }
 

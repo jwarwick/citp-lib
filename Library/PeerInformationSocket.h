@@ -19,7 +19,7 @@ public:
 
   // XXX - need updateState(QString)
 
-  bool listPeers(QList<struct PeerDescription*> &peerList);
+  bool listPeers(QList<Peer*> &peerList);
 
 private slots:
   void transmitPLoc();
@@ -36,7 +36,7 @@ private:
 
   void processPacket(const QHostAddress &sender, const QByteArray &packet);
 
-  void addPeer(const QString &host, quint16 listeningPort, const QString &typeString, 
+  void addPeer(const QHostAddress &host, quint16 listeningPort, const QString &typeString, 
        const QString &name, const QString &state);
   QList<Peer*> m_peerList;
 
