@@ -6,6 +6,15 @@
 
 class QTcpSocket;
 
+  typedef enum
+    {
+      UNKNOWN_PEER,
+      VISUALIZER_PEER,
+      MEDIASERVER_PEER,
+      LIGHTINGCONSOLE_PEER,
+      OPERATIONSHUB_PEER,
+    } PeerType;
+
 class Peer : public QObject
 {
   Q_OBJECT
@@ -15,16 +24,20 @@ public:
   virtual ~Peer();
 
   
-  QString peerName() const;
-  QString peerState() const;
-  QString peerHost() const;
-  quint16 peerListeningPort() const;
+  virtual QString peerName() const;
+  virtual QString peerState() const;
+  virtual QString peerHost() const;
+  virtual quint16 peerListeningPort() const;
 
-  bool connectToPeer();
 
-  bool sendUniverseName(quint8 universeIndex, const QString &universeName);
+
+  virtual PeerType peerType() const;
+
+  virtual bool connectToPeer();
 
  protected:
+
+  PeerType m_peerType;
 
   QString m_peerState;
   QString m_peerName;

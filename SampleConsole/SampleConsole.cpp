@@ -1,7 +1,7 @@
 #include "SampleConsole.h"
 
 #include "citp-lib.h"
-#include "Peer.h"
+#include "Visualizer.h"
 
 #include <QtDebug>
 
@@ -72,7 +72,7 @@ void SampleConsole::on_connectButton_clicked()
       return;
     }
 
-  m_visualizer = peers.at(1);
+  m_visualizer = (Visualizer*)(peers.at(1));
   if (!m_visualizer->connectToPeer())
     {
       qDebug() << "ConnectToPeer failed";
@@ -92,3 +92,26 @@ void SampleConsole::on_sendNameButton_clicked()
     }
 }
 
+void SampleConsole::on_sendDataButton_clicked()
+{
+  static quint8 count = 128;
+
+  if (m_visualizer)
+    {
+      bool blind = false;
+      quint8 universeIndex = 0;
+      quint16 firstChannelIndex = 0;
+      quint16 channelCount = 24;
+      quint8 *channelLevels = new quint8[channelCount];
+      memset(channelLevels, count, channelCount);
+
+      if (!m_visualizer->sendChannelData(blind, universeIndex, firstChannelIndex, 
+					 channelCount, channelLevels))
+	{
+	  qDebug() << "send channel data failed";
+	}
+
+      delete[] channelLevels;
+      count++;
+    }
+}

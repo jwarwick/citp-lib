@@ -6,7 +6,7 @@
 #include "ui_SampleConsole.h"
 
 class CITPLib;
-class Peer;
+class Visualizer;
 
 class SampleConsole : public QMainWindow
 {
@@ -19,6 +19,7 @@ private slots:
   void on_actionExit_triggered();
   void on_connectButton_clicked();
   void on_sendNameButton_clicked();
+  void on_sendDataButton_clicked();
 
   void handlePeersUpdated();
 
@@ -26,7 +27,7 @@ private:
   Ui::SampleConsole ui;
 
   CITPLib *m_citp;
-  Peer *m_visualizer;
+  Visualizer *m_visualizer;
 
 };
 

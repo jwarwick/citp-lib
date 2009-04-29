@@ -111,3 +111,61 @@ unsigned char * PacketCreator::createUNamPacket(quint8 universeIndex,
 
   return buffer;
 }
+
+// returns NULL on error. bufferLen is the length of the returned buffer.
+unsigned char * PacketCreator::createChBkPacket(bool blind,
+						quint8 universeIndex,
+						quint16 firstChannelIndex,
+						quint16 channelCount,
+						const quint8 *channelLevels,
+						int &bufferLen)
+{
+  // figure out the packet size, all strings need to be NULL terminated
+  bufferLen = sizeof(struct CITP_SDMX_ChBk) + channelCount;
+  
+  unsigned char *buffer = new unsigned char[bufferLen];
+  memset(buffer, 0, bufferLen);
+
+  CITP_SDMX_ChBk *packet = (CITP_SDMX_ChBk *)buffer;
+
+  // CITP header
+  packet->CITPSDMXHeader.CITPHeader.Cookie = COOKIE_CITP;
+  packet->CITPSDMXHeader.CITPHeader.VersionMajor = 0x01;
+  packet->CITPSDMXHeader.CITPHeader.VersionMinor = 0x00;
+  packet->CITPSDMXHeader.CITPHeader.Reserved[0] = 0x00;
+  packet->CITPSDMXHeader.CITPHeader.Reserved[1] = 0x00; 
+  packet->CITPSDMXHeader.CITPHeader.MessageSize = bufferLen;
+  packet->CITPSDMXHeader.CITPHeader.MessagePartCount = 0x01;
+  packet->CITPSDMXHeader.CITPHeader.MessagePart = 0x01; // XXX - doc says 0-based?
+  packet->CITPSDMXHeader.CITPHeader.ContentType = COOKIE_SDMX;
+
+  // SDMX header
+  packet->CITPSDMXHeader.ContentType = COOKIE_SDMX_CHBK;
+
+/*
+// Channel Block message
+struct CITP_SDMX_ChBk 
+{ 
+  CITP_SDMX_Header  CITPSDMXHeader;    // CITP SDMX header. SDMX ContentType is "ChBk". 
+  uint8             Blind;             // Set to 1 for blind preview dmx, 0 otherwise. 
+  uint8             UniverseIndex;     // 0-based index of the universe. 
+  uint16            FirstChannel;      // 0-based index of first channel in the universe. 
+  uint16            ChannelCount;      // Number of channels. 
+  uint8             ChannelLevels[];   // Raw channel levels. 
+}; 
+*/
+
+   // ChBk data
+   packet->Blind = blind?0x01:0x00;
+   packet->UniverseIndex = universeIndex;
+   packet->FirstChannel = firstChannelIndex;
+   packet->ChannelCount = channelCount;
+
+  // channels
+  int offset = sizeof(struct CITP_SDMX_ChBk);
+  memcpy(buffer + offset, channelLevels, channelCount);
+
+  return buffer;
+}
+
+

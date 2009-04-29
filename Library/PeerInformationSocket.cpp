@@ -8,6 +8,7 @@
 #include "CITPDefines.h"
 #include "PacketCreator.h"
 #include "Peer.h"
+#include "Visualizer.h"
 
 #ifdef Q_OS_WIN
   #include <winsock2.h>
@@ -216,7 +217,15 @@ void PeerInformationSocket::addPeer(const QHostAddress &host, quint16 listeningP
   //  qDebug() << "Adding new peer to list:" << host.toString() << listeningPort << typeString << name << state;
 
   // add the newly discovered peer
-  Peer *newPeer = new Peer(host, listeningPort, name, state);
+  Peer *newPeer;
+  if ("Visualizer" == typeString)
+    {
+      newPeer = new Visualizer(host, listeningPort, name, state);
+    }
+  else
+    {
+      newPeer = new Peer(host, listeningPort, name, state);
+    }
   Q_CHECK_PTR(newPeer);
   m_peerList.append(newPeer);
 

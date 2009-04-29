@@ -26,6 +26,14 @@ public:
   static unsigned char * createUNamPacket(quint8 universeIndex, const QString &name,
 					  int &bufferLen);
 
+  // returns NULL on error. bufferLen is the length of the returned buffer.
+  static unsigned char * PacketCreator::createChBkPacket(bool blind,
+							 quint8 universeIndex,
+							 quint16 firstChannelIndex,
+							 quint16 channelCount,
+							 const quint8 *channelLevels,
+							 int &bufferLen);
+
 };
 
 #endif // _PACKETCREATOR_H_

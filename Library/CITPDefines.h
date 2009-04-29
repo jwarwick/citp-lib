@@ -40,7 +40,8 @@ typedef unsigned char ucs1;
 #define COOKIE_SDMX_ENID  0x456e4964    // 'EnId'
 //#define COOKIE_SDMX_UNAM  0x554e616d    // 'UNam'
 #define COOKIE_SDMX_UNAM  0x6d614e55    // 'UNam'
-#define COOKIE_SDMX_CHBK  0x4368426b    // 'ChBk'
+//#define COOKIE_SDMX_CHBK  0x4368426b    // 'ChBk'
+#define COOKIE_SDMX_CHBK  0x6b426843    // 'ChBk'
 
 #pragma pack(1)
 
@@ -133,7 +134,7 @@ struct CITP_SDMX_ChBk
   uint8             UniverseIndex;     // 0-based index of the universe. 
   uint16            FirstChannel;      // 0-based index of first channel in the universe. 
   uint16            ChannelCount;      // Number of channels. 
-  uint8             ChannelLevels[];   // Raw channel levels. 
+  //uint8             ChannelLevels[];   // Raw channel levels. 
 }; 
 
 // Set External Source message

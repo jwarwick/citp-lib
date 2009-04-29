@@ -6,6 +6,7 @@
 Peer::Peer(const QHostAddress &host, quint16 listeningPort,
        const QString &peerName, const QString &peerState, QObject *parent)
   : QObject(parent),
+    m_peerType(UNKNOWN_PEER),
     m_peerState(peerState),
     m_peerName(peerName),
     m_host(host),
@@ -29,6 +30,11 @@ Peer::~Peer()
     {
       m_tcpSocket->close();
     }
+}
+
+PeerType Peer::peerType() const
+{
+  return m_peerType;
 }
 
 QString Peer::peerName() const
@@ -71,35 +77,5 @@ bool Peer::connectToPeer()
   return true;
 }
 
-bool Peer::sendUniverseName(quint8 universeIndex, const QString &universeName)
-{
-  if (!m_tcpSocket)
-    {
-      return false;
-    }
-  
-  if (QAbstractSocket::ConnectedState != m_tcpSocket->state())
-    {
-      qDebug() << "Peer::sendUniverseName() - Socket not connected";
-      return false;
-    }
 
-  int bufferLen;
-  unsigned char *buffer = PacketCreator::createUNamPacket(universeIndex, universeName, bufferLen);
-  if (!buffer)
-    {
-      qDebug() << "createUNamPacket() failed";
-      return false;
-    }
-
-  if (bufferLen != m_tcpSocket->write((const char*)buffer, bufferLen))
-    {
-      qDebug() << "sendUniverseName() write failed:" << m_tcpSocket->error();
-      return false;
-    }
-
-  delete buffer;
-
-  return true;
-}
 
