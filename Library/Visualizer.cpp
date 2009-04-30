@@ -19,17 +19,6 @@ Visualizer::~Visualizer()
 
 bool Visualizer::sendUniverseName(quint8 universeIndex, const QString &universeName)
 {
-  if (!m_tcpSocket)
-    {
-      return false;
-    }
-  
-  if (QAbstractSocket::ConnectedState != m_tcpSocket->state())
-    {
-      qDebug() << "Peer::sendUniverseName() - Socket not connected";
-      return false;
-    }
-
   int bufferLen;
   unsigned char *buffer = PacketCreator::createUNamPacket(universeIndex, universeName, bufferLen);
   if (!buffer)
@@ -38,14 +27,14 @@ bool Visualizer::sendUniverseName(quint8 universeIndex, const QString &universeN
       return false;
     }
 
-  if (bufferLen != m_tcpSocket->write((const char*)buffer, bufferLen))
+  if (!sendPacket(buffer, bufferLen))
     {
-      qDebug() << "sendUniverseName() write failed:" << m_tcpSocket->error();
+      qDebug() << "Visualizer::sendUniverseName failed";
+      delete[] buffer;
       return false;
     }
 
   delete[] buffer;
-
   return true;
 }
 
@@ -53,17 +42,6 @@ bool Visualizer::sendChannelData(bool blind, quint8 universeIndex,
 				 quint16 firstChannelIndex, quint16 channelCount, 
 				 const quint8 *channelLevels) 
 {
-  if (!m_tcpSocket)
-    {
-      return false;
-    }
-  
-  if (QAbstractSocket::ConnectedState != m_tcpSocket->state())
-    {
-      qDebug() << "Peer::sendChannelData() - Socket not connected";
-      return false;
-    }
-
   int bufferLen;
   unsigned char *buffer = PacketCreator::createChBkPacket(blind,
 							  universeIndex,
@@ -77,13 +55,86 @@ bool Visualizer::sendChannelData(bool blind, quint8 universeIndex,
       return false;
     }
 
-  if (bufferLen != m_tcpSocket->write((const char*)buffer, bufferLen))
+  if (!sendPacket(buffer, bufferLen))
     {
-      qDebug() << "sendChannelData() write failed:" << m_tcpSocket->error();
+      qDebug() << "Visualizer::sendChannelData failed";
+      delete[] buffer;
       return false;
     }
 
   delete[] buffer;
-
   return true;
 }
+
+bool Visualizer::sendPatchMessage(quint16 fixtureIdentifier, quint8 universeIndex, quint16 channelIndex,
+				  quint16 channelCount, const QString &fixtureMake, const QString &fixtureName)
+{
+  int bufferLen;
+  unsigned char *buffer = PacketCreator::createPtchPacket(fixtureIdentifier,
+							  universeIndex,
+							  channelIndex,
+							  channelCount,
+							  fixtureMake,
+							  fixtureName,
+							  bufferLen);
+  if (!buffer)
+    {
+      qDebug() << "createPtchPacket() failed";
+      return false;
+    }
+
+  if (!sendPacket(buffer, bufferLen))
+    {
+      qDebug() << "Visualizer::sendPatchMessage failed";
+      delete[] buffer;
+      return false;
+    }
+
+  delete[] buffer;
+  return true;
+}
+
+// send empty list to unpatch all fixtures
+bool Visualizer::sendUnpatchMessage(const QList<quint16> &fixtureIdentifiers)
+{
+  int bufferLen;
+  unsigned char *buffer = PacketCreator::createUPtcPacket(fixtureIdentifiers);
+  if (!buffer)
+    {
+      qDebug() << "createUPtcPacket() failed";
+      return false;
+    }
+
+  if (!sendPacket(buffer, bufferLen))
+    {
+      qDebug() << "Visualizer::sendUnpatchMessage failed";
+      delete[] buffer;
+      return false;
+    }
+
+  delete[] buffer;
+  return true;
+}
+
+// send empty list to request entire patch
+bool Visualizer::sendPatchRequest(const QList<quint16> &fixtureIdentifiers)
+{
+  int bufferLen;
+  unsigned char *buffer = PacketCreator::createSPtcPacket(fixtureIdentifiers);
+  if (!buffer)
+    {
+      qDebug() << "createSPtcPacket() failed";
+      return false;
+    }
+
+  if (!sendPacket(buffer, bufferLen))
+    {
+      qDebug() << "Visualizer::sendPatchRequest failed";
+      delete[] buffer;
+      return false;
+    }
+
+  delete[] buffer;
+  return true;
+}
+

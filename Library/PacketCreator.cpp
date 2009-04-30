@@ -142,19 +142,6 @@ unsigned char * PacketCreator::createChBkPacket(bool blind,
   // SDMX header
   packet->CITPSDMXHeader.ContentType = COOKIE_SDMX_CHBK;
 
-/*
-// Channel Block message
-struct CITP_SDMX_ChBk 
-{ 
-  CITP_SDMX_Header  CITPSDMXHeader;    // CITP SDMX header. SDMX ContentType is "ChBk". 
-  uint8             Blind;             // Set to 1 for blind preview dmx, 0 otherwise. 
-  uint8             UniverseIndex;     // 0-based index of the universe. 
-  uint16            FirstChannel;      // 0-based index of first channel in the universe. 
-  uint16            ChannelCount;      // Number of channels. 
-  uint8             ChannelLevels[];   // Raw channel levels. 
-}; 
-*/
-
    // ChBk data
    packet->Blind = blind?0x01:0x00;
    packet->UniverseIndex = universeIndex;
@@ -169,3 +156,57 @@ struct CITP_SDMX_ChBk
 }
 
 
+unsigned char * PacketCreator::createPtchPacket(quint16 fixtureIdentifier, 
+						quint8 universeIndex, 
+						quint16 channelIndex,
+						quint16 channelCount, 
+						const QString &fixtureMake, 
+						const QString &fixtureName,
+						int &bufferLen)
+{
+  // figure out the packet size, all strings need to be NULL terminated
+  int stringSize = 0;
+  if (!fixtureMake.isEmpty())
+    {
+      stringSize += fixtureMake.size() + 1;
+    }
+  stringSize += fixtureName.size() + 1;
+  bufferLen = sizeof(struct CITP_FPTC_Ptch) + stringSize;
+  
+  unsigned char *buffer = new unsigned char[bufferLen];
+  memset(buffer, 0, bufferLen);
+
+  CITP_FPTC_Ptch *packet = (CITP_FPTC_Ptch *)buffer;
+
+  // CITP header
+  packet->CITPFPTCHeader.CITPHeader.Cookie = COOKIE_CITP;
+  packet->CITPFPTCHeader.CITPHeader.VersionMajor = 0x01;
+  packet->CITPFPTCHeader.CITPHeader.VersionMinor = 0x00;
+  packet->CITPFPTCHeader.CITPHeader.Reserved[0] = 0x00;
+  packet->CITPFPTCHeader.CITPHeader.Reserved[1] = 0x00; 
+  packet->CITPFPTCHeader.CITPHeader.MessageSize = bufferLen;
+  packet->CITPFPTCHeader.CITPHeader.MessagePartCount = 0x01;
+  packet->CITPFPTCHeader.CITPHeader.MessagePart = 0x01; // XXX - doc says 0-based?
+  packet->CITPFPTCHeader.CITPHeader.ContentType = COOKIE_FPTC;
+
+  // FPTC header
+  packet->CITPFPTCHeader.ContentType = COOKIE_FPTC_PTCH;
+
+   // Ptch data
+  packet->FixtureIdentifier = fixtureIdentifier;
+  packet->Universe = universeIndex;
+  packet->Channel = channelIndex;
+  packet->ChannelCount = channelCount;
+  
+  // fixture make
+  int offset = sizeof(struct CITP_FPTC_Ptch);
+  if (!fixtureMake.isEmpty())
+    {
+      memcpy(buffer + offset, fixtureMake.constData(), fixtureMake.size());
+      offset += fixtureMake.size() + 1;
+    }
+
+  memcpy(buffer + offset, fixtureName.constData(), fixtureName.size());
+
+  return buffer;
+}

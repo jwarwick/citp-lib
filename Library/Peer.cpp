@@ -77,5 +77,25 @@ bool Peer::connectToPeer()
   return true;
 }
 
+bool Peer::sendPacket(const unsigned char *buffer, int bufferLen)
+{
+  if (!m_tcpSocket)
+    {
+      return false;
+    }
+  
+  if (QAbstractSocket::ConnectedState != m_tcpSocket->state())
+    {
+      qDebug() << "Peer::sendPacket() - Socket not connected";
+      return false;
+    }
 
+  if (bufferLen != m_tcpSocket->write((const char*)buffer, bufferLen))
+    {
+      qDebug() << "Peer::sendPacket() write failed:" << m_tcpSocket->error();
+      return false;
+    }
+
+  return true;
+}
 

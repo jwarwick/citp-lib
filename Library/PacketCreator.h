@@ -34,6 +34,14 @@ public:
 							 const quint8 *channelLevels,
 							 int &bufferLen);
 
+  static unsigned char * PacketCreator::createPtchPacket(quint16 fixtureIdentifier, 
+							 quint8 universeIndex, 
+							 quint16 channelIndex,
+							 quint16 channelCount, 
+							 const QString &fixtureMake, 
+							 const QString &fixtureName,
+							 int &bufferLen);
+
 };
 
 #endif // _PACKETCREATOR_H_

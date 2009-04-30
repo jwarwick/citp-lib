@@ -47,6 +47,8 @@ public:
 
   QTcpSocket *m_tcpSocket;
 
+  bool sendPacket(const unsigned char *buffer, int bufferLen);
+
  signals:
   void connectedToPeer();
   void disconnectedFromPeer();

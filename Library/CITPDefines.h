@@ -43,6 +43,32 @@ typedef unsigned char ucs1;
 //#define COOKIE_SDMX_CHBK  0x4368426b    // 'ChBk'
 #define COOKIE_SDMX_CHBK  0x6b426843    // 'ChBk'
 
+
+//#define COOKIE_FPTC  0x46545043 // 'FTPC'
+#define COOKIE_FPTC  0x43505446 // 'FPTC'
+//#define COOKIE_FPTC_PTCH 0x50746368 // 'Ptch'
+#define COOKIE_FPTC_PTCH 0x68637450 // 'Ptch'
+//#define COOKIE_FPTC_UPTC 0x55507464 // 'UPtc'
+#define COOKIE_FPTC_UPTC 0x64745055 // 'UPtc'
+//#define COOKIE_FPTC_SPTC 0x5350746c // 'SPtc'
+#define COOKIE_FPTC_SPTC 0x6c745053 // 'SPtc'
+
+//#define COOKIE_FSEL 0x4653454c // 'FSEL'
+#define COOKIE_FSEL 0x4c455346 // 'FSEL'
+//#define COOKIE_FSEL_SELE 0x53656c65 // 'Sele'
+#define COOKIE_FSEL_SELE 0x656c6553 // 'Sele'
+//#define COOKIE_FSEL_DESE 0x44655365 // 'DeSe'
+#define COOKIE_FSEL_DESE 0x65536544 // 'DeSe'
+
+//#define COOKIE_FINF       0x46494e46 // 'FINF'
+#define COOKIE_FINF       0x464e4946 // 'FINF'
+//#define COOKIE_FINF_SFRA  0x53467261 // 'SFra'
+#define COOKIE_FINF_SFRA  0x61724653 // 'SFra'
+//#define COOKIE_FINF_FRAM  0x4672616d // 'Fram'
+#define COOKIE_FINF_FRAM  0x6d617246 // 'Fram'
+//#define COOKIE_FINF_LSTA  0x4c537461 // 'LSta'
+#define COOKIE_FINF_LSTA  0x6174534c // 'LSta'
+
 #pragma pack(1)
 
 //
@@ -145,5 +171,47 @@ struct CITP_SDMX_SXSr
                                           // Connection Strings in Definitions. 
 };
 
+
+//
+// CITP, FPTC - Fixture Patch Layer
+//
+
+struct CITP_FPTC_Header 
+{ 
+  CITP_Header CITPHeader;    // The CITP header. CITP ContentType is "FPTC". 
+  uint32      ContentType;   // A cookie defining which FSEL message it is. 
+  uint32      ContentHint;   // Content hint flags. 
+                             // 0x00000001    Message part of a sequence of messages. 
+                             // 0x00000002    Message part of and ends a sequence of messages. 
+}; 
+
+// Fixture Patch message
+struct CITP_FPTC_Ptch 
+{ 
+  CITP_FPTC_Header  CITPFPTCHeader;      // The CITP FPTC header. FPTC ContentType is "Ptch". 
+  uint16            FixtureIdentifier;   // Fixture identifier. 
+  uint8             Universe;            // Patch universe (0-based). 
+  uint8             Reserved[1];         // 4-byte alignment. 
+  uint16            Channel;             // Patch channel (0-based). 
+  uint16            ChannelCount;        // Patch channel count (1-512). 
+  //ucs1              FixtureMake[];       // Fixture make (only null if omitted). 
+  //ucs1              FixtureName[];       // Fixture name (never omitted). 
+}; 
+
+// Fixture Unpatch message
+struct CITP_FPTC_UPtc 
+{ 
+  CITP_FPTC_Header  CITPFPTCHeader;          // The CITP FPTC header. FPTC ContentType is "UPtc". 
+  uint16            FixtureCount;            // Fixture count (0 to unpatch all). 
+  //uint16            FixtureIdentifiers[];    // Fixture identifiers 
+}; 
+
+// Fixture Send Patch message
+struct CITP_FPTC_SPtc 
+{ 
+  CITP_FPTC_Header  CITPFPTCHeader;          // The CITP FPTC header. FPTC ContentType is "SPtc". 
+  uint16            FixtureCount;            // Fixture count (0 to request all). 
+  //uint16            FixtureIdentifiers[];    // Fixture identifiers. 
+};
 
 #endif // _CITPDEFINES_H_

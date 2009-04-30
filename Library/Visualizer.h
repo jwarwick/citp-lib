@@ -17,6 +17,14 @@ public:
 		       quint16 firstChannelIndex, quint16 channelCount, 
 		       const quint8 *channelLevels);
 
+  bool sendPatchMessage(quint16 fixtureIdentifier, quint8 universeIndex, quint16 channelIndex,
+			quint16 channelCount, const QString &fixtureMake, const QString &fixtureName);
+
+  // send empty list to unpatch all fixtures
+  bool sendUnpatchMessage(const QList<quint16> &fixtureIdentifiers);
+
+  // send empty list to request entire patch
+  bool sendPatchRequest(const QList<quint16> &fixtureIdentifiers);
 };
 
 #endif // _VISUALIZER_H_
