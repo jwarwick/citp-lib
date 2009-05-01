@@ -98,7 +98,7 @@ bool Visualizer::sendPatchMessage(quint16 fixtureIdentifier, quint8 universeInde
 bool Visualizer::sendUnpatchMessage(const QList<quint16> &fixtureIdentifiers)
 {
   int bufferLen;
-  unsigned char *buffer = PacketCreator::createUPtcPacket(fixtureIdentifiers);
+  unsigned char *buffer = PacketCreator::createUPtcPacket(fixtureIdentifiers, bufferLen);
   if (!buffer)
     {
       qDebug() << "createUPtcPacket() failed";
@@ -119,8 +119,10 @@ bool Visualizer::sendUnpatchMessage(const QList<quint16> &fixtureIdentifiers)
 // send empty list to request entire patch
 bool Visualizer::sendPatchRequest(const QList<quint16> &fixtureIdentifiers)
 {
+  qDebug() << "in sendPatchRequest";
+
   int bufferLen;
-  unsigned char *buffer = PacketCreator::createSPtcPacket(fixtureIdentifiers);
+  unsigned char *buffer = PacketCreator::createSPtcPacket(fixtureIdentifiers, bufferLen);
   if (!buffer)
     {
       qDebug() << "createSPtcPacket() failed";

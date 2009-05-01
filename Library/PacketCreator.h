@@ -42,6 +42,10 @@ public:
 							 const QString &fixtureName,
 							 int &bufferLen);
 
+  static unsigned char * PacketCreator::createSPtcPacket(const QList<quint16> &fixtureIdentifiers, int &bufferLen);
+
+  static unsigned char * PacketCreator::createUPtcPacket(const QList<quint16> &fixtureIdentifiers, int &bufferLen);
+
 };
 
 #endif // _PACKETCREATOR_H_

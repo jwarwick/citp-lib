@@ -44,14 +44,14 @@ typedef unsigned char ucs1;
 #define COOKIE_SDMX_CHBK  0x6b426843    // 'ChBk'
 
 
-//#define COOKIE_FPTC  0x46545043 // 'FTPC'
-#define COOKIE_FPTC  0x43505446 // 'FPTC'
+//#define COOKIE_FPTC  0x46505443 // 'FTPC'
+#define COOKIE_FPTC  0x43545046 // 'FPTC'
 //#define COOKIE_FPTC_PTCH 0x50746368 // 'Ptch'
 #define COOKIE_FPTC_PTCH 0x68637450 // 'Ptch'
-//#define COOKIE_FPTC_UPTC 0x55507464 // 'UPtc'
-#define COOKIE_FPTC_UPTC 0x64745055 // 'UPtc'
-//#define COOKIE_FPTC_SPTC 0x5350746c // 'SPtc'
-#define COOKIE_FPTC_SPTC 0x6c745053 // 'SPtc'
+//#define COOKIE_FPTC_UPTC 0x55507463 // 'UPtc'
+#define COOKIE_FPTC_UPTC 0x63745055 // 'UPtc'
+//#define COOKIE_FPTC_SPTC 0x53507463 // 'SPtc'
+#define COOKIE_FPTC_SPTC 0x63745053 // 'SPtc'
 
 //#define COOKIE_FSEL 0x4653454c // 'FSEL'
 #define COOKIE_FSEL 0x4c455346 // 'FSEL'

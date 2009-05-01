@@ -21,6 +21,10 @@ private slots:
   void on_sendNameButton_clicked();
   void on_sendDataButton_clicked();
 
+  void on_sendPatchButton_clicked();
+  void on_patchButton_clicked();
+  void on_unpatchButton_clicked();
+
   void handlePeersUpdated();
 
 private:

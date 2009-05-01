@@ -115,3 +115,33 @@ void SampleConsole::on_sendDataButton_clicked()
       count++;
     }
 }
+
+void SampleConsole::on_sendPatchButton_clicked()
+{
+  if (m_visualizer)
+    {
+      QList<quint16> fixList;
+      if (!m_visualizer->sendPatchRequest(fixList))
+	{
+	  qDebug() << "send patch request failed";
+	  return;
+	}
+    }
+}
+
+void SampleConsole::on_patchButton_clicked()
+{
+}
+
+void SampleConsole::on_unpatchButton_clicked()
+{
+  if (m_visualizer)
+    {
+      QList<quint16> fixList;
+      if (!m_visualizer->sendUnpatchMessage(fixList))
+	{
+	  qDebug() << "send unpatch message failed";
+	  return;
+	}
+    }
+}

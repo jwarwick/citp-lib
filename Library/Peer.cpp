@@ -99,3 +99,16 @@ bool Peer::sendPacket(const unsigned char *buffer, int bufferLen)
   return true;
 }
 
+void Peer::handleReadyRead()
+{
+  if (!m_tcpSocket)
+    {
+      return;
+    }
+
+  while(m_tcpSocket->bytesAvailable())
+    {
+      QByteArray byteArray = m_tcpSocket->readAll();
+      qDebug() << "Read Data:" << byteArray[0] << byteArray[1] << byteArray[2] << byteArray[3]; 
+    }
+}

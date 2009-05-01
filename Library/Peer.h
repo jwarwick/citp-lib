@@ -49,6 +49,8 @@ public:
 
   bool sendPacket(const unsigned char *buffer, int bufferLen);
 
+  void handleReadyRead();
+
  signals:
   void connectedToPeer();
   void disconnectedFromPeer();

@@ -191,6 +191,7 @@ unsigned char * PacketCreator::createPtchPacket(quint16 fixtureIdentifier,
 
   // FPTC header
   packet->CITPFPTCHeader.ContentType = COOKIE_FPTC_PTCH;
+  packet->CITPFPTCHeader.ContentHint = 0x00; // XXX - is this right?
 
    // Ptch data
   packet->FixtureIdentifier = fixtureIdentifier;
@@ -207,6 +208,90 @@ unsigned char * PacketCreator::createPtchPacket(quint16 fixtureIdentifier,
     }
 
   memcpy(buffer + offset, fixtureName.constData(), fixtureName.size());
+
+  return buffer;
+}
+
+unsigned char * PacketCreator::createSPtcPacket(const QList<quint16> &fixtureIdentifiers, int &bufferLen)
+{
+  // figure out the packet size
+  const quint16 fixtureCount = fixtureIdentifiers.size();
+  bufferLen = sizeof(struct CITP_FPTC_SPtc) + (fixtureCount * sizeof(uint16));
+
+  qDebug() << "sptc: fixtureCount" << fixtureCount;
+  qDebug() << "sizeof(citp)" << sizeof(struct CITP_Header);
+  qDebug() << "sizeof(fptc)" << sizeof(struct CITP_FPTC_Header);
+  qDebug() << "sizeof(sptc)" << sizeof(struct CITP_FPTC_SPtc);
+  qDebug() << "bufferLen" << bufferLen;
+  fflush(NULL);
+
+  
+  unsigned char *buffer = new unsigned char[bufferLen];
+  memset(buffer, 0, bufferLen);
+
+  CITP_FPTC_SPtc *packet = (CITP_FPTC_SPtc *)buffer;
+
+  // CITP header
+  packet->CITPFPTCHeader.CITPHeader.Cookie = COOKIE_CITP;
+  packet->CITPFPTCHeader.CITPHeader.VersionMajor = 0x01;
+  packet->CITPFPTCHeader.CITPHeader.VersionMinor = 0x00;
+  packet->CITPFPTCHeader.CITPHeader.Reserved[0] = 0x00;
+  packet->CITPFPTCHeader.CITPHeader.Reserved[1] = 0x00; 
+  packet->CITPFPTCHeader.CITPHeader.MessageSize = bufferLen;
+  packet->CITPFPTCHeader.CITPHeader.MessagePartCount = 0x01;
+  packet->CITPFPTCHeader.CITPHeader.MessagePart = 0x01; // XXX - doc says 0-based?
+  packet->CITPFPTCHeader.CITPHeader.ContentType = COOKIE_FPTC;
+
+  // FPTC header
+  packet->CITPFPTCHeader.ContentType = COOKIE_FPTC_SPTC;
+  packet->CITPFPTCHeader.ContentHint = 0x00000000; // XXX - how should we figure this out?
+
+   // SPtc data
+  packet->FixtureCount = fixtureCount;
+  int offset = sizeof(struct CITP_FPTC_SPtc);
+  foreach (quint16 fixId, fixtureIdentifiers)
+    {
+      buffer[offset++] = (fixId >> 8) & 0xFF;
+      buffer[offset++] = fixId & 0xFF;
+    }
+
+  return buffer;
+}
+
+unsigned char * PacketCreator::createUPtcPacket(const QList<quint16> &fixtureIdentifiers, int &bufferLen)
+{
+  // figure out the packet size
+  const quint16 fixtureCount = fixtureIdentifiers.size();
+  bufferLen = sizeof(struct CITP_FPTC_UPtc) + (fixtureCount * sizeof(uint16));
+
+  unsigned char *buffer = new unsigned char[bufferLen];
+  memset(buffer, 0, bufferLen);
+
+  CITP_FPTC_UPtc *packet = (CITP_FPTC_UPtc *)buffer;
+
+  // CITP header
+  packet->CITPFPTCHeader.CITPHeader.Cookie = COOKIE_CITP;
+  packet->CITPFPTCHeader.CITPHeader.VersionMajor = 0x01;
+  packet->CITPFPTCHeader.CITPHeader.VersionMinor = 0x00;
+  packet->CITPFPTCHeader.CITPHeader.Reserved[0] = 0x00;
+  packet->CITPFPTCHeader.CITPHeader.Reserved[1] = 0x00; 
+  packet->CITPFPTCHeader.CITPHeader.MessageSize = bufferLen;
+  packet->CITPFPTCHeader.CITPHeader.MessagePartCount = 0x01;
+  packet->CITPFPTCHeader.CITPHeader.MessagePart = 0x01; // XXX - doc says 0-based?
+  packet->CITPFPTCHeader.CITPHeader.ContentType = COOKIE_FPTC;
+
+  // FPTC header
+  packet->CITPFPTCHeader.ContentType = COOKIE_FPTC_UPTC;
+  packet->CITPFPTCHeader.ContentHint = 0x00000000; // XXX - how should we figure this out?
+
+   // SPtc data
+  packet->FixtureCount = fixtureCount;
+  int offset = sizeof(struct CITP_FPTC_UPtc);
+  foreach (quint16 fixId, fixtureIdentifiers)
+    {
+      buffer[offset++] = (fixId >> 8) & 0xFF;
+      buffer[offset++] = fixId & 0xFF;
+    }
 
   return buffer;
 }
