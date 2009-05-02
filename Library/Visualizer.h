@@ -1,3 +1,4 @@
+// -*- mode: C++ -*-
 #ifndef _VISUALIZER_H_
 #define _VISUALIZER_H_
 

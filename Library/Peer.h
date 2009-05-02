@@ -1,3 +1,4 @@
+// -*- mode: C++ -*-
 #ifndef _PEER_H_
 #define _PEER_H_
 

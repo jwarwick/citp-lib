@@ -1,3 +1,4 @@
+// -*- mode: C++ -*-
 #ifndef _CITPLIB_H_
 #define _CITPLIB_H_
 

@@ -1,3 +1,4 @@
+// -*- mode: C++ -*-
 #ifndef _CITPDEFINES_H_
 #define _CITPDEFINES_H_
 

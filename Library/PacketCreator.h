@@ -1,3 +1,4 @@
+// -*- mode: C++ -*-
 #ifndef _PACKETCREATOR_H_
 #define _PACKETCREATOR_H_
 

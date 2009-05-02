@@ -1,3 +1,4 @@
+// -*- mode: C++ -*-
 #ifndef _PEERINFORMATIONSOCKET_H_
 #define _PEERINFORMATIONSOCKET_H_
 
