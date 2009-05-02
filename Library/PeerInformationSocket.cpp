@@ -231,24 +231,7 @@ void PeerInformationSocket::addPeer(const QHostAddress &host, quint16 listeningP
 
   qDebug() << "added peer, peer list size:" << m_peerList.size();
 
-  /*
-  const Peer *p = m_peerList.at(0);
-  if (p)
-    {
-      qDebug() << "peer is not null";
-      qDebug() << "newpeer host:" << p->m_host;
-      qDebug() << "newpeer port:" << p->m_listeningPort;
-      qDebug() << "newpeer state:" << p->m_peerState;
-      qDebug() << "newpeer type:" << p->m_peerType;
-      qDebug() << "newpeer name:" << p->m_peerName;
-    }
-  else
-    {
-      qDebug() << "Peer is null....";
-    }
-  */
-
-    emit peersUpdated();
+  emit peersUpdated();
 }
 
 bool PeerInformationSocket::listPeers(QList<Peer*> &peerList)

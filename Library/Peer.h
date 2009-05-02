@@ -7,14 +7,16 @@
 
 class QTcpSocket;
 
-  typedef enum
-    {
-      UNKNOWN_PEER,
-      VISUALIZER_PEER,
-      MEDIASERVER_PEER,
-      LIGHTINGCONSOLE_PEER,
-      OPERATIONSHUB_PEER,
-    } PeerType;
+class Fixture;
+
+typedef enum
+  {
+    UNKNOWN_PEER,
+    VISUALIZER_PEER,
+    MEDIASERVER_PEER,
+    LIGHTINGCONSOLE_PEER,
+    OPERATIONSHUB_PEER,
+  } PeerType;
 
 class Peer : public QObject
 {
@@ -30,11 +32,11 @@ public:
   virtual QString peerHost() const;
   virtual quint16 peerListeningPort() const;
 
-
-
   virtual PeerType peerType() const;
 
   virtual bool connectToPeer();
+
+  QList<Fixture*> m_fixtureList;
 
  protected:
 
@@ -51,11 +53,25 @@ public:
   bool sendPacket(const unsigned char *buffer, int bufferLen);
 
   void handleReadyRead();
+  void parsePacket(const QByteArray &byteArray);
+  void parseFPTCPacket(const QByteArray &byteArray);
+  void parseUPTCPacket(const QByteArray &byteArray);  
+  void parseSPTCPacket(const QByteArray &byteArray);
+  void parsePTCHPacket(const QByteArray &byteArray);
 
- signals:
+
+ 
+signals:
   void connectedToPeer();
   void disconnectedFromPeer();
 
+  void unpatchAllFixtures();
+  void unpatchFixtures(const QList<quint16> &fixtureIdentifiers);
+
+  void sendPatchAllFixtures();
+  void sendPatchFixtures(const QList<quint16> &fixtureIdentifiers);
+
+  void updatedFixtureList();
 };
 
 #endif _PEER_H_

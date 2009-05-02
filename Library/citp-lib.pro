@@ -17,9 +17,11 @@ HEADERS += citp-lib.h \
            PeerInformationSocket.h \
            Peer.h \
            Visualizer.h \
+           Fixture.h \
 
 SOURCES += citp-lib.cpp \
            PacketCreator.cpp \
            PeerInformationSocket.cpp \
            Peer.cpp \
            Visualizer.cpp \
+           Fixture.cpp \
