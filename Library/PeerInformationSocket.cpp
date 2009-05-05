@@ -145,11 +145,13 @@ void PeerInformationSocket::processPacket(const QHostAddress &address, const QBy
 
   if (packet->CITPPINFHeader.CITPHeader.VersionMajor != 0x01)
     {
+      qDebug() << "Invalid VersionMajor value:" << packet->CITPPINFHeader.CITPHeader.VersionMajor;
       return;
     }
 
   if (packet->CITPPINFHeader.CITPHeader.VersionMinor != 0x00)
     {
+      qDebug() << "Invalid VersionMinor value:" << packet->CITPPINFHeader.CITPHeader.VersionMinor;
       return;
     }
   //packet->CITPPINFHeader.CITPHeader.Reserved[0] = 0x00;

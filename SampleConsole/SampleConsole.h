@@ -27,6 +27,11 @@ private slots:
 
   void handlePeersUpdated();
 
+  void handleUnpatchAllFixtures();
+  void handleUnpatchFixures(const QList<quint16> &fixtureIdentifiers);
+
+  void handleUpdatedFixtureList();
+
 private:
   Ui::SampleConsole ui;
 

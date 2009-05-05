@@ -218,14 +218,6 @@ unsigned char * PacketCreator::createSPtcPacket(const QList<quint16> &fixtureIde
   const quint16 fixtureCount = fixtureIdentifiers.size();
   bufferLen = sizeof(struct CITP_FPTC_SPtc) + (fixtureCount * sizeof(uint16));
 
-  qDebug() << "sptc: fixtureCount" << fixtureCount;
-  qDebug() << "sizeof(citp)" << sizeof(struct CITP_Header);
-  qDebug() << "sizeof(fptc)" << sizeof(struct CITP_FPTC_Header);
-  qDebug() << "sizeof(sptc)" << sizeof(struct CITP_FPTC_SPtc);
-  qDebug() << "bufferLen" << bufferLen;
-  fflush(NULL);
-
-  
   unsigned char *buffer = new unsigned char[bufferLen];
   memset(buffer, 0, bufferLen);
 

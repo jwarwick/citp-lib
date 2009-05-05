@@ -2,6 +2,7 @@
 #include "CITPDefines.h"
 #include "PacketCreator.h"
 #include "Fixture.h"
+#include "FixtureModel.h"
 
 #include <QTcpSocket>
 
@@ -14,6 +15,9 @@ Peer::Peer(const QHostAddress &host, quint16 listeningPort,
     m_host(host),
     m_listeningPort(listeningPort)
 {
+  m_fixtureModel = new FixtureModel(this);
+  Q_CHECK_PTR(m_fixtureModel);
+
   m_tcpSocket = new QTcpSocket(this);
   Q_CHECK_PTR(m_tcpSocket);
 
@@ -21,9 +25,9 @@ Peer::Peer(const QHostAddress &host, quint16 listeningPort,
 	  this, SIGNAL(connectedToPeer()));
   connect(m_tcpSocket, SIGNAL(disconnected()),
 	  this, SIGNAL(disconnectedFromPeer()));
+  connect(m_tcpSocket, SIGNAL(readyRead()),
+	  this, SLOT(handleReadyRead()));
 
-  qDebug() << "Peer::Peer(), name=" << m_peerName;
-  qDebug() << "Peer::Peer(), state=" << m_peerState;
 }
 
 Peer::~Peer()
@@ -110,11 +114,64 @@ void Peer::handleReadyRead()
 
   while(m_tcpSocket->bytesAvailable())
     {
-      QByteArray byteArray = m_tcpSocket->readAll();
+
+      QByteArray peekArray = m_tcpSocket->peek(12);
+      if (12 != peekArray.size())
+	{
+	  return;
+	}
+
+      if (peekArray[0] != 'C' &&
+	  peekArray[1] != 'I' &&
+	  peekArray[2] != 'T' &&
+	  peekArray[3] != 'P')
+	{
+	  // remove the first byte and try again
+	  QByteArray b = m_tcpSocket->read(1);
+	  qDebug() << "Discarding byte:" << b[0];
+	  continue;
+	}
+
+      quint32 messageSize = 0;
+      messageSize = peekArray[11];
+      messageSize <<= 8;
+      messageSize |= peekArray[10];
+      messageSize <<= 8;
+      messageSize |= peekArray[9];
+      messageSize <<= 8;
+      messageSize |= peekArray[8];
+
+      qDebug() << "Found message size:" << messageSize;
+      
+      if (messageSize > m_tcpSocket->bytesAvailable())
+	{
+	  qDebug() << "Not enough bytes available, only have:" << m_tcpSocket->bytesAvailable();
+	  return;
+	}
+
+      QByteArray byteArray = m_tcpSocket->read(messageSize);
       qDebug() << "Read Data:" << byteArray[0] << byteArray[1] << byteArray[2] << byteArray[3]; 
 
+      qDebug() << "byteArray size:" << byteArray.size();
+
       parsePacket(byteArray);
+
     }
+}
+
+void Peer::parseBlockOfData(const QByteArray &byteArray)
+{
+  const int byteArraySize = byteArray.size();
+  int offset = 0;
+  while (byteArray[0 + offset] != 'C' &&
+	 byteArray[1 + offset] != 'I' &&
+	 byteArray[2 + offset] != 'T' &&
+	 byteArray[3 + offset] != 'P')
+    {
+      offset++;
+      //if
+    }
+
 }
 
 void Peer::parsePacket(const QByteArray &byteArray)
@@ -135,12 +192,14 @@ void Peer::parsePacket(const QByteArray &byteArray)
       return;
     }
 
+  // XXX - this coming back as 0x01 during patch operations?
+  /*
   if (citpHeader->VersionMinor != 0x00)
     {
       qDebug() << "parsePacket: invalid VersionMinor:" << citpHeader->VersionMinor;
       return;
     }
-
+  */
   //packet->bufferLen;
   //packet->MessagePartCount = 0x01;
   //packet->MessagePart = 0x01; // XXX - doc says 0-based?
@@ -207,6 +266,12 @@ void Peer::parseUPTCPacket(const QByteArray &byteArray)
       offset += 2;
     }
 
+  qDebug() << "parseUPTCPacket: Unpatch Fixtures:";
+  foreach (quint16 id, fixtureIdentifiers)
+    {
+      qDebug() << "\tunpatch id:" << id;
+    }
+
   emit unpatchFixtures(fixtureIdentifiers);
 }
 
@@ -231,6 +296,12 @@ void Peer::parseSPTCPacket(const QByteArray &byteArray)
       offset += 2;
     }
 
+  qDebug() << "parseSPTCPacket: Unpatch Fixtures:";
+  foreach (quint16 id, fixtureIdentifiers)
+    {
+      qDebug() << "\tpatch id:" << id;
+    }
+
   emit sendPatchFixtures(fixtureIdentifiers);
 }
 
@@ -253,9 +324,11 @@ void Peer::parsePTCHPacket(const QByteArray &byteArray)
   Fixture *fix = new Fixture(fixId, universe, channel, channelCount, makeString, nameString, this);
   Q_CHECK_PTR(fix);
 
-  qDebug() << "parseFPTCPacket:" << fixId << universe << channel << channelCount << makeString << nameString;
+  qDebug() << "parseFPTCPacket Id:" << fixId << "universe:" << universe << "channel:" << 
+    channel << "channelcount:" << channelCount << makeString << nameString;
 
   m_fixtureList.append(fix);
+  m_fixtureModel->addFixture(fix);
 
   emit updatedFixtureList();
 }

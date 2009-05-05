@@ -18,6 +18,7 @@ HEADERS += citp-lib.h \
            Peer.h \
            Visualizer.h \
            Fixture.h \
+           FixtureModel.h \
 
 SOURCES += citp-lib.cpp \
            PacketCreator.cpp \
@@ -25,3 +26,4 @@ SOURCES += citp-lib.cpp \
            Peer.cpp \
            Visualizer.cpp \
            Fixture.cpp \
+           FixtureModel.cpp \

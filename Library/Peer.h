@@ -8,6 +8,7 @@
 class QTcpSocket;
 
 class Fixture;
+class FixtureModel;
 
 typedef enum
   {
@@ -36,6 +37,7 @@ public:
 
   virtual bool connectToPeer();
 
+  FixtureModel *m_fixtureModel;
   QList<Fixture*> m_fixtureList;
 
  protected:
@@ -52,14 +54,15 @@ public:
 
   bool sendPacket(const unsigned char *buffer, int bufferLen);
 
-  void handleReadyRead();
+  void parseBlockOfData(const QByteArray &byteArray);
   void parsePacket(const QByteArray &byteArray);
   void parseFPTCPacket(const QByteArray &byteArray);
   void parseUPTCPacket(const QByteArray &byteArray);  
   void parseSPTCPacket(const QByteArray &byteArray);
   void parsePTCHPacket(const QByteArray &byteArray);
 
-
+protected slots:
+  void handleReadyRead();
  
 signals:
   void connectedToPeer();

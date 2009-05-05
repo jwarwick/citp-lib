@@ -2,6 +2,7 @@
 
 #include "citp-lib.h"
 #include "Visualizer.h"
+#include "FixtureModel.h"
 
 #include <QtDebug>
 
@@ -44,8 +45,6 @@ void SampleConsole::handlePeersUpdated()
 	}
     }
 
-  qDebug() << "Peer list length:" << peerList.size();
-
   ui.textEdit->appendPlainText("\n\nPeer List Updated:");
   foreach (const Peer *peer, peerList)
     {
@@ -78,6 +77,15 @@ void SampleConsole::on_connectButton_clicked()
       qDebug() << "ConnectToPeer failed";
       return;
     }
+
+  connect(m_visualizer, SIGNAL(unpatchAllFixtures()),
+	  this, SLOT(handleUnpatchAllFixtures()));
+  connect(m_visualizer, SIGNAL(unpatchFixtures(const QList<quint16> &)),
+	  this, SLOT(handleUnpatchFixtures(const QList<quint16> &)));
+  connect(m_visualizer, SIGNAL(updatedFixtureList()),
+	  this, SLOT(handleUpdatedFixtureList()));
+
+  ui.tableView->setModel(m_visualizer->m_fixtureModel);
 }
 
 void SampleConsole::on_sendNameButton_clicked()
@@ -144,4 +152,19 @@ void SampleConsole::on_unpatchButton_clicked()
 	  return;
 	}
     }
+}
+
+void SampleConsole::handleUnpatchAllFixtures()
+{
+  ui.textEdit->appendPlainText(tr("Got Unpatch All Fixtures signal"));
+}
+
+void SampleConsole::handleUnpatchFixures(const QList<quint16> &fixtureIdentifiers)
+{
+  ui.textEdit->appendPlainText(tr("Got Unpatch Fixture List signal"));
+}
+
+void SampleConsole::handleUpdatedFixtureList()
+{
+  ui.textEdit->appendPlainText(tr("Got Updated Fixture List signal"));
 }
