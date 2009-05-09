@@ -243,8 +243,8 @@ unsigned char * PacketCreator::createSPtcPacket(const QList<quint16> &fixtureIde
   int offset = sizeof(struct CITP_FPTC_SPtc);
   foreach (quint16 fixId, fixtureIdentifiers)
     {
-      buffer[offset++] = (fixId >> 8) & 0xFF;
       buffer[offset++] = fixId & 0xFF;
+      buffer[offset++] = (fixId >> 8) & 0xFF;
     }
 
   return buffer;
@@ -281,8 +281,84 @@ unsigned char * PacketCreator::createUPtcPacket(const QList<quint16> &fixtureIde
   int offset = sizeof(struct CITP_FPTC_UPtc);
   foreach (quint16 fixId, fixtureIdentifiers)
     {
-      buffer[offset++] = (fixId >> 8) & 0xFF;
       buffer[offset++] = fixId & 0xFF;
+      buffer[offset++] = (fixId >> 8) & 0xFF;
+    }
+
+  return buffer;
+}
+
+unsigned char * PacketCreator::createSelePacket(const QList<quint16> &fixtureIdentifiers, 
+						bool complete, int &bufferLen)
+{
+  // figure out the packet size
+  const quint16 fixtureCount = fixtureIdentifiers.size();
+  bufferLen = sizeof(struct CITP_FSEL_Sele) + (fixtureCount * sizeof(uint16));
+
+  unsigned char *buffer = new unsigned char[bufferLen];
+  memset(buffer, 0, bufferLen);
+
+  CITP_FSEL_Sele *packet = (CITP_FSEL_Sele *)buffer;
+
+  // CITP header
+  packet->CITPFSELHeader.CITPHeader.Cookie = COOKIE_CITP;
+  packet->CITPFSELHeader.CITPHeader.VersionMajor = 0x01;
+  packet->CITPFSELHeader.CITPHeader.VersionMinor = 0x00;
+  packet->CITPFSELHeader.CITPHeader.Reserved[0] = 0x00;
+  packet->CITPFSELHeader.CITPHeader.Reserved[1] = 0x00; 
+  packet->CITPFSELHeader.CITPHeader.MessageSize = bufferLen;
+  packet->CITPFSELHeader.CITPHeader.MessagePartCount = 0x01;
+  packet->CITPFSELHeader.CITPHeader.MessagePart = 0x01; // XXX - doc says 0-based?
+  packet->CITPFSELHeader.CITPHeader.ContentType = COOKIE_FSEL;
+
+  // FSEL header
+  packet->CITPFSELHeader.ContentType = COOKIE_FSEL_SELE;
+
+   // Sele data
+  packet->Complete = complete?0xFF:0x00;
+  packet->FixtureCount = fixtureCount;
+  int offset = sizeof(struct CITP_FSEL_Sele);
+  foreach (quint16 fixId, fixtureIdentifiers)
+    {
+      buffer[offset++] = fixId & 0xFF;
+      buffer[offset++] = (fixId >> 8) & 0xFF;
+    }
+
+  return buffer;
+}
+
+unsigned char * PacketCreator::createDeSePacket(const QList<quint16> &fixtureIdentifiers, int &bufferLen)
+{
+  // figure out the packet size
+  const quint16 fixtureCount = fixtureIdentifiers.size();
+  bufferLen = sizeof(struct CITP_FSEL_DeSe) + (fixtureCount * sizeof(uint16));
+
+  unsigned char *buffer = new unsigned char[bufferLen];
+  memset(buffer, 0, bufferLen);
+
+  CITP_FSEL_DeSe *packet = (CITP_FSEL_DeSe *)buffer;
+
+  // CITP header
+  packet->CITPFSELHeader.CITPHeader.Cookie = COOKIE_CITP;
+  packet->CITPFSELHeader.CITPHeader.VersionMajor = 0x01;
+  packet->CITPFSELHeader.CITPHeader.VersionMinor = 0x00;
+  packet->CITPFSELHeader.CITPHeader.Reserved[0] = 0x00;
+  packet->CITPFSELHeader.CITPHeader.Reserved[1] = 0x00; 
+  packet->CITPFSELHeader.CITPHeader.MessageSize = bufferLen;
+  packet->CITPFSELHeader.CITPHeader.MessagePartCount = 0x01;
+  packet->CITPFSELHeader.CITPHeader.MessagePart = 0x01; // XXX - doc says 0-based?
+  packet->CITPFSELHeader.CITPHeader.ContentType = COOKIE_FSEL;
+
+  // FSEL header
+  packet->CITPFSELHeader.ContentType = COOKIE_FSEL_DESE;
+
+   // Dese data
+  packet->FixtureCount = fixtureCount;
+  int offset = sizeof(struct CITP_FSEL_DeSe);
+  foreach (quint16 fixId, fixtureIdentifiers)
+    {
+      buffer[offset++] = fixId & 0xFF;
+      buffer[offset++] = (fixId >> 8) & 0xFF;
     }
 
   return buffer;

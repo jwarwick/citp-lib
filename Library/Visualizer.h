@@ -27,6 +27,11 @@ public:
   // send empty list to request entire patch
   bool sendPatchRequest(const QList<quint16> &fixtureIdentifiers);
 
+  bool sendSelectMessage(bool complete, const QList<quint16> &fixtureIdentifiers);
+  bool sendDeselectMessage(const QList<quint16> &fixtureIdentifiers);
+
+
+
 };
 
 #endif // _VISUALIZER_H_

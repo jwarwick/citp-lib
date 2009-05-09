@@ -159,21 +159,6 @@ void Peer::handleReadyRead()
     }
 }
 
-void Peer::parseBlockOfData(const QByteArray &byteArray)
-{
-  const int byteArraySize = byteArray.size();
-  int offset = 0;
-  while (byteArray[0 + offset] != 'C' &&
-	 byteArray[1 + offset] != 'I' &&
-	 byteArray[2 + offset] != 'T' &&
-	 byteArray[3 + offset] != 'P')
-    {
-      offset++;
-      //if
-    }
-
-}
-
 void Peer::parsePacket(const QByteArray &byteArray)
 {
   const char *data = byteArray.constData();
@@ -213,6 +198,10 @@ void Peer::parsePacket(const QByteArray &byteArray)
 
     case COOKIE_FPTC:
       parseFPTCPacket(byteArray);
+      break;
+
+    case COOKIE_FSEL:
+      parseFSELPacket(byteArray);
       break;
 
     default:
@@ -331,4 +320,79 @@ void Peer::parsePTCHPacket(const QByteArray &byteArray)
   m_fixtureModel->addFixture(fix);
 
   emit updatedFixtureList();
+}
+
+void Peer::parseFSELPacket(const QByteArray &byteArray)
+{
+  const char *data = byteArray.constData();
+  struct CITP_FSEL_Header *fselHeader = (struct CITP_FSEL_Header*)data;
+
+  switch (fselHeader->ContentType)
+    {
+    case COOKIE_FSEL_SELE:
+      parseSELEPacket(byteArray);
+      break;
+
+    case COOKIE_FSEL_DESE:
+      parseDESEPacket(byteArray);
+      break;
+
+    default:
+      qDebug() << "parseFSELPacket: unknown ContentType:" << fselHeader->ContentType;
+    }
+}
+
+void Peer::parseSELEPacket(const QByteArray &byteArray)
+{
+  const char *data = byteArray.constData();
+  struct CITP_FSEL_Sele *selePacket = (struct CITP_FSEL_Sele*)data;
+
+  quint16 fixtureCount = selePacket->FixtureCount;
+  bool complete = selePacket->Complete;
+
+  QList<quint16> fixtureIdentifiers;
+  int offset = sizeof(struct CITP_FSEL_Sele);
+  for (int i=0; i<fixtureCount; ++i)
+    {
+      quint16 *fixId = (quint16*)(data + offset);
+      fixtureIdentifiers.append(*fixId);
+      offset += 2;
+    }
+
+  qDebug() << "parseSELEPacket: Select Fixtures:";
+  foreach (quint16 id, fixtureIdentifiers)
+    {
+      qDebug() << "\tselect id:" << id;
+    }
+
+  emit selectFixtures(complete, fixtureIdentifiers);
+}
+
+void Peer::parseDESEPacket(const QByteArray &byteArray)
+{
+  const char *data = byteArray.constData();
+  struct CITP_FSEL_DeSe *selePacket = (struct CITP_FSEL_DeSe*)data;
+
+  quint16 fixtureCount = selePacket->FixtureCount;
+  if (0 == fixtureCount)
+    {
+      emit deselectAllFixtures();
+    }
+
+  QList<quint16> fixtureIdentifiers;
+  int offset = sizeof(struct CITP_FSEL_DeSe);
+  for (int i=0; i<fixtureCount; ++i)
+    {
+      quint16 *fixId = (quint16*)(data + offset);
+      fixtureIdentifiers.append(*fixId);
+      offset += 2;
+    }
+
+  qDebug() << "parseDESEPacket: Deselect Fixtures:";
+  foreach (quint16 id, fixtureIdentifiers)
+    {
+      qDebug() << "\tdeselect id:" << id;
+    }
+
+  emit deselectFixtures(fixtureIdentifiers);
 }

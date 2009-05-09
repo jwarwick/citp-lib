@@ -1,3 +1,4 @@
+// -*- mode: C++ -*-
 #ifndef _SAMPLECONSOLE_H_
 #define _SAMPLECONSOLE_H_
 
@@ -25,10 +26,18 @@ private slots:
   void on_patchButton_clicked();
   void on_unpatchButton_clicked();
 
+  void on_selectPushButton_clicked();
+  void on_deselectPushButton_clicked();
+
   void handlePeersUpdated();
 
   void handleUnpatchAllFixtures();
   void handleUnpatchFixures(const QList<quint16> &fixtureIdentifiers);
+
+  void handleSelectFixtures(bool complete, const QList<quint16> &fixtureIdentifiers);
+
+  void handleDeselectAllFixtures();
+  void handleDeselectFixtures(const QList<quint16> &fixtureIdentifiers);
 
   void handleUpdatedFixtureList();
 

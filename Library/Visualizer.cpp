@@ -140,3 +140,44 @@ bool Visualizer::sendPatchRequest(const QList<quint16> &fixtureIdentifiers)
   return true;
 }
 
+bool Visualizer::sendSelectMessage(bool complete, const QList<quint16> &fixtureIdentifiers)
+{
+  int bufferLen;
+  unsigned char *buffer = PacketCreator::createSelePacket(fixtureIdentifiers, complete, bufferLen);
+  if (!buffer)
+    {
+      qDebug() << "createSelePacket() failed";
+      return false;
+    }
+
+  if (!sendPacket(buffer, bufferLen))
+    {
+      qDebug() << "Visualizer::sendSelectMessage failed";
+      delete[] buffer;
+      return false;
+    }
+
+  delete[] buffer;
+  return true;
+}
+
+bool Visualizer::sendDeselectMessage(const QList<quint16> &fixtureIdentifiers)
+{
+  int bufferLen;
+  unsigned char *buffer = PacketCreator::createDeSePacket(fixtureIdentifiers, bufferLen);
+  if (!buffer)
+    {
+      qDebug() << "createDeSePacket() failed";
+      return false;
+    }
+
+  if (!sendPacket(buffer, bufferLen))
+    {
+      qDebug() << "Visualizer::sendDeselectMessage failed";
+      delete[] buffer;
+      return false;
+    }
+
+  delete[] buffer;
+  return true;
+}

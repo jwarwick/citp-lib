@@ -28,24 +28,29 @@ public:
 					  int &bufferLen);
 
   // returns NULL on error. bufferLen is the length of the returned buffer.
-  static unsigned char * PacketCreator::createChBkPacket(bool blind,
-							 quint8 universeIndex,
-							 quint16 firstChannelIndex,
-							 quint16 channelCount,
-							 const quint8 *channelLevels,
-							 int &bufferLen);
+  static unsigned char * createChBkPacket(bool blind,
+					  quint8 universeIndex,
+					  quint16 firstChannelIndex,
+					  quint16 channelCount,
+					  const quint8 *channelLevels,
+					  int &bufferLen);
 
-  static unsigned char * PacketCreator::createPtchPacket(quint16 fixtureIdentifier, 
-							 quint8 universeIndex, 
-							 quint16 channelIndex,
-							 quint16 channelCount, 
-							 const QString &fixtureMake, 
-							 const QString &fixtureName,
-							 int &bufferLen);
+  static unsigned char * createPtchPacket(quint16 fixtureIdentifier, 
+					  quint8 universeIndex, 
+					  quint16 channelIndex,
+					  quint16 channelCount, 
+					  const QString &fixtureMake, 
+					  const QString &fixtureName,
+					  int &bufferLen);
 
-  static unsigned char * PacketCreator::createSPtcPacket(const QList<quint16> &fixtureIdentifiers, int &bufferLen);
+  static unsigned char * createSPtcPacket(const QList<quint16> &fixtureIdentifiers, int &bufferLen);
 
-  static unsigned char * PacketCreator::createUPtcPacket(const QList<quint16> &fixtureIdentifiers, int &bufferLen);
+  static unsigned char * createUPtcPacket(const QList<quint16> &fixtureIdentifiers, int &bufferLen);
+
+  static unsigned char * createSelePacket(const QList<quint16> &fixtureIdentifiers, 
+					  bool complete, int &bufferLen);
+
+  static unsigned char * createDeSePacket(const QList<quint16> &fixtureIdentifiers, int &bufferLen);
 
 };
 

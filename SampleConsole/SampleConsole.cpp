@@ -154,6 +154,37 @@ void SampleConsole::on_unpatchButton_clicked()
     }
 }
 
+void SampleConsole::on_selectPushButton_clicked()
+{
+  if (m_visualizer)
+    {
+      int id = ui.idSpinBox->value();
+      bool complete = Qt::Checked == ui.completeCheckBox->checkState();
+      QList<quint16> fixIds;
+      fixIds.append(id);
+      if (!m_visualizer->sendSelectMessage(complete, fixIds))
+	{
+	  qDebug() << "send select message failed";
+	  return;
+	}
+    }
+}
+
+void SampleConsole::on_deselectPushButton_clicked()
+{
+  if (m_visualizer)
+    {
+      int id = ui.idSpinBox->value();
+      QList<quint16> fixIds;
+      fixIds.append(id);
+      if (!m_visualizer->sendDeselectMessage(fixIds))
+	{
+	  qDebug() << "send deselect message failed";
+	  return;
+	}
+    }
+}
+
 void SampleConsole::handleUnpatchAllFixtures()
 {
   ui.textEdit->appendPlainText(tr("Got Unpatch All Fixtures signal"));
@@ -167,4 +198,19 @@ void SampleConsole::handleUnpatchFixures(const QList<quint16> &fixtureIdentifier
 void SampleConsole::handleUpdatedFixtureList()
 {
   ui.textEdit->appendPlainText(tr("Got Updated Fixture List signal"));
+}
+
+void SampleConsole::handleSelectFixtures(bool complete, const QList<quint16> &fixtureIdentifiers)
+{
+  ui.textEdit->appendPlainText(tr("Got Select Fixtures signal"));
+}
+
+void SampleConsole::handleDeselectAllFixtures()
+{
+  ui.textEdit->appendPlainText(tr("Got Deselect All Fixtures signal"));
+}
+
+void SampleConsole::handleDeselectFixtures(const QList<quint16> &fixtureIdentifiers)
+{
+  ui.textEdit->appendPlainText(tr("Got Deselect Fixtures signal"));
 }

@@ -180,7 +180,7 @@ struct CITP_SDMX_SXSr
 struct CITP_FPTC_Header 
 { 
   CITP_Header CITPHeader;    // The CITP header. CITP ContentType is "FPTC". 
-  uint32      ContentType;   // A cookie defining which FSEL message it is. 
+  uint32      ContentType;   // A cookie defining which FPTC message it is. 
   uint32      ContentHint;   // Content hint flags. 
                              // 0x00000001    Message part of a sequence of messages. 
                              // 0x00000002    Message part of and ends a sequence of messages. 
@@ -213,6 +213,35 @@ struct CITP_FPTC_SPtc
   CITP_FPTC_Header  CITPFPTCHeader;          // The CITP FPTC header. FPTC ContentType is "SPtc". 
   uint16            FixtureCount;            // Fixture count (0 to request all). 
   //uint16            FixtureIdentifiers[];    // Fixture identifiers. 
+};
+
+
+//
+// CITP, FSEL - Fixture Selection Layer
+//
+
+struct CITP_FSEL_Header 
+{ 
+  CITP_Header CITPHeader;    // The CITP header. CITP ContentType is "FSEL". 
+  uint32      ContentType;   // A cookie defining which FSEL message it is. 
+}; 
+
+// Fixture Select message
+struct CITP_FSEL_Sele 
+{ 
+  CITP_FSEL_Header  CITPFSELHeader;          // The CITP FSEL header. FSEL ContentType is  "Sele".                  
+  uint8             Complete;                // Set to non-zero for complete selection              
+  uint8             Reserved[1];             // 4-byte alignment                            
+  uint16            FixtureCount;            // Greater than 0                           
+  //uint16            FixtureIdentifiers[];    // Fixture identifiers 
+};
+
+// Fixture Deselect message
+struct CITP_FSEL_DeSe 
+{ 
+  CITP_FSEL_Header  CITPFSELHeader;          // The CITP FSEL header. FSEL ContentType is  "DeSe".                  
+  uint16            FixtureCount;            // 0 for complete deselection                          
+  //uint16            FixtureIdentifiers[];    // Fixture identifiers 
 };
 
 #endif // _CITPDEFINES_H_

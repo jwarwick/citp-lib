@@ -54,12 +54,16 @@ public:
 
   bool sendPacket(const unsigned char *buffer, int bufferLen);
 
-  void parseBlockOfData(const QByteArray &byteArray);
   void parsePacket(const QByteArray &byteArray);
+
   void parseFPTCPacket(const QByteArray &byteArray);
   void parseUPTCPacket(const QByteArray &byteArray);  
   void parseSPTCPacket(const QByteArray &byteArray);
   void parsePTCHPacket(const QByteArray &byteArray);
+
+  void parseFSELPacket(const QByteArray &byteArray);
+  void parseSELEPacket(const QByteArray &byteArray);
+  void parseDESEPacket(const QByteArray &byteArray);
 
 protected slots:
   void handleReadyRead();
@@ -73,6 +77,11 @@ signals:
 
   void sendPatchAllFixtures();
   void sendPatchFixtures(const QList<quint16> &fixtureIdentifiers);
+
+  void selectFixtures(bool complete, const QList<quint16> &fixtureIdentifiers);
+  
+  void deselectFixtures(const QList<quint16> &fixtureIdentifiers);
+  void deselectAllFixtures();
 
   void updatedFixtureList();
 };
