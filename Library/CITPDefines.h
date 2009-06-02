@@ -43,7 +43,8 @@ typedef unsigned char ucs1;
 #define COOKIE_SDMX_UNAM  0x6d614e55    // 'UNam'
 //#define COOKIE_SDMX_CHBK  0x4368426b    // 'ChBk'
 #define COOKIE_SDMX_CHBK  0x6b426843    // 'ChBk'
-
+//#define COOKIE_SDMX_SXSR 0x53585372     // 'SXSr'
+#define COOKIE_SDMX_SXSR 0x72535853     // 'SXSr'
 
 //#define COOKIE_FPTC  0x46505443 // 'FTPC'
 #define COOKIE_FPTC  0x43545046 // 'FPTC'
@@ -163,6 +164,25 @@ struct CITP_SDMX_ChBk
   uint16            ChannelCount;      // Number of channels. 
   //uint8             ChannelLevels[];   // Raw channel levels. 
 }; 
+
+
+// DMX Connection Strings
+
+// ArtNet "ArtNet/<net>/<universe>/<channel>" 
+// "ArtNet/0/0/1" - The first channel of the first universe on the first network. 
+#define ARTNET_STRING tr("ArtNet/%1/%2/%3")
+
+// Avab IPX "AvabIPX/<net>/<universe>/<channel>" 
+// "AvabIPX/0/0/1" - The first channel of the first universe on the first network. 
+#define AVAB_STRING tr("AvabIPX/%1/%2/%3")
+
+// BSR E1.31 "BSRE1.31/<universe>/<channel>" 
+// "BSRE1.31/0/1" - The first channel of the first universe. 
+#define E131_STRING tr("BSRE1.31/%1/%2")
+
+// ETC Net2 "ETCNet2/<channel>" 
+// "ETCNet2/1" - The first ETCNet2 channel.
+#define ETCNET2_STRING tr("ETCNet2/%1")
 
 // Set External Source message
 struct CITP_SDMX_SXSr

@@ -155,6 +155,75 @@ unsigned char * PacketCreator::createChBkPacket(bool blind,
   return buffer;
 }
 
+// returns NULL on error. bufferLen is the length of the returned buffer.
+unsigned char * PacketCreator::createSXSrPacket_ArtNet(int network,
+						       int universe,
+						       int channel,
+						       int &bufferLen)
+{
+  QString str = ARTNET_STRING.arg(network).arg(universe).arg(channel);
+  return createSXSrPacket(str, bufferLen);
+}
+
+// returns NULL on error. bufferLen is the length of the returned buffer.
+unsigned char * PacketCreator::createSXSrPacket_Avab(int network,
+						     int universe,
+						     int channel,
+						     int &bufferLen)
+{
+  QString str = AVAB_STRING.arg(network).arg(universe).arg(channel);
+  return createSXSrPacket(str, bufferLen);
+}
+
+// returns NULL on error. bufferLen is the length of the returned buffer.
+unsigned char * PacketCreator::createSXSrPacket_E131(int universe,
+						     int channel,
+						     int &bufferLen)
+{
+  QString str = E131_STRING.arg(universe).arg(channel);
+  return createSXSrPacket(str, bufferLen);
+}
+
+// returns NULL on error. bufferLen is the length of the returned buffer.
+unsigned char * PacketCreator::createSXSrPacket_ETCNet2(int channel,
+							int &bufferLen)
+{
+  QString str = ETCNET2_STRING.arg(channel);
+  return createSXSrPacket(str, bufferLen);
+}
+
+
+unsigned char * PacketCreator::createSXSrPacket(const QString &str, int &bufferLen)
+{
+
+  // figure out the packet size, all strings need to be NULL terminated
+  bufferLen = sizeof(struct CITP_SDMX_SXSr) + str.size() + 1;
+  
+  unsigned char *buffer = new unsigned char[bufferLen];
+  memset(buffer, 0, bufferLen);
+
+  CITP_SDMX_SXSr *packet = (CITP_SDMX_SXSr *)buffer;
+
+  // CITP header
+  packet->CITPSDMXHeader.CITPHeader.Cookie = COOKIE_CITP;
+  packet->CITPSDMXHeader.CITPHeader.VersionMajor = 0x01;
+  packet->CITPSDMXHeader.CITPHeader.VersionMinor = 0x00;
+  packet->CITPSDMXHeader.CITPHeader.Reserved[0] = 0x00;
+  packet->CITPSDMXHeader.CITPHeader.Reserved[1] = 0x00; 
+  packet->CITPSDMXHeader.CITPHeader.MessageSize = bufferLen;
+  packet->CITPSDMXHeader.CITPHeader.MessagePartCount = 0x01;
+  packet->CITPSDMXHeader.CITPHeader.MessagePart = 0x01; // XXX - doc says 0-based?
+  packet->CITPSDMXHeader.CITPHeader.ContentType = COOKIE_SDMX;
+
+  // SXSr header
+  packet->CITPSDMXHeader.ContentType = COOKIE_SDMX_SXSR;
+
+  // SXSr data
+  int offset = sizeof(struct CITP_SDMX_SXSr);
+  memcpy(buffer + offset, str.toAscii().constData(), str.size());
+
+  return buffer;
+}
 
 unsigned char * PacketCreator::createPtchPacket(quint16 fixtureIdentifier, 
 						quint8 universeIndex, 

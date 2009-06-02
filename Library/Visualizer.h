@@ -30,6 +30,11 @@ public:
   bool sendSelectMessage(bool complete, const QList<quint16> &fixtureIdentifiers);
   bool sendDeselectMessage(const QList<quint16> &fixtureIdentifiers);
 
+  // Alternate DMX source management
+  bool sendAlternateSourceMessage_ArtNet(int network, int universe, int channel);
+  bool sendAlternateSourceMessage_Avab(int network, int universe, int channel);
+  bool sendAlternateSourceMessage_E131(int universe, int channel);
+  bool sendAlternateSourceMessage_ETCNet2(int channel);
 
 
 };

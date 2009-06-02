@@ -66,6 +66,92 @@ bool Visualizer::sendChannelData(bool blind, quint8 universeIndex,
   return true;
 }
 
+
+  // Alternate DMX source management
+bool Visualizer::sendAlternateSourceMessage_ArtNet(int network, int universe, int channel)
+{
+  int bufferLen;
+  unsigned char *buffer = PacketCreator::createSXSrPacket_ArtNet(network, universe, channel, bufferLen);
+  if (!buffer)
+    {
+      qDebug() << "createSXSrPacket_ArtNet() failed";
+      return false;
+    }
+
+  if (!sendPacket(buffer, bufferLen))
+    {
+      qDebug() << "Visualizer::sendAlternateSourceMessage_ArtNet failed";
+      delete[] buffer;
+      return false;
+    }
+
+  delete[] buffer;
+  return true;
+}
+ 
+bool Visualizer::sendAlternateSourceMessage_Avab(int network, int universe, int channel)
+{
+  int bufferLen;
+  unsigned char *buffer = PacketCreator::createSXSrPacket_Avab(network, universe, channel, bufferLen);
+  if (!buffer)
+    {
+      qDebug() << "createSXSrPacket_Avab() failed";
+      return false;
+    }
+
+  if (!sendPacket(buffer, bufferLen))
+    {
+      qDebug() << "Visualizer::sendAlternateSourceMessage_Avab failed";
+      delete[] buffer;
+      return false;
+    }
+
+  delete[] buffer;
+  return true;
+}
+
+bool Visualizer::sendAlternateSourceMessage_E131(int universe, int channel)
+{
+  int bufferLen;
+  unsigned char *buffer = PacketCreator::createSXSrPacket_E131(universe, channel, bufferLen);
+  if (!buffer)
+    {
+      qDebug() << "createSXSrPacket_E131() failed";
+      return false;
+    }
+
+  if (!sendPacket(buffer, bufferLen))
+    {
+      qDebug() << "Visualizer::sendAlternateSourceMessage_E131 failed";
+      delete[] buffer;
+      return false;
+    }
+
+  delete[] buffer;
+  return true;
+}
+
+bool Visualizer::sendAlternateSourceMessage_ETCNet2(int channel)
+{
+  int bufferLen;
+  unsigned char *buffer = PacketCreator::createSXSrPacket_ETCNet2(channel, bufferLen);
+  if (!buffer)
+    {
+      qDebug() << "createSXSrPacket_ETCNet2() failed";
+      return false;
+    }
+
+  if (!sendPacket(buffer, bufferLen))
+    {
+      qDebug() << "Visualizer::sendAlternateSourceMessage_ETCNet2 failed";
+      delete[] buffer;
+      return false;
+    }
+
+  delete[] buffer;
+  return true;
+}
+
 bool Visualizer::sendPatchMessage(quint16 fixtureIdentifier, quint8 universeIndex, quint16 channelIndex,
 				  quint16 channelCount, const QString &fixtureMake, const QString &fixtureName)
 {

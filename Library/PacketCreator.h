@@ -35,6 +35,11 @@ public:
 					  const quint8 *channelLevels,
 					  int &bufferLen);
 
+  static unsigned char * createSXSrPacket_ArtNet(int network, int universe, int channel, int &bufferLen);
+  static unsigned char * createSXSrPacket_Avab(int network, int universe, int channel, int &bufferLen);
+  static unsigned char * createSXSrPacket_E131(int universe, int channel, int &bufferLen);
+  static unsigned char * createSXSrPacket_ETCNet2(int channel, int &bufferLen);
+
   static unsigned char * createPtchPacket(quint16 fixtureIdentifier, 
 					  quint8 universeIndex, 
 					  quint16 channelIndex,
@@ -51,6 +56,10 @@ public:
 					  bool complete, int &bufferLen);
 
   static unsigned char * createDeSePacket(const QList<quint16> &fixtureIdentifiers, int &bufferLen);
+
+private:
+
+  static unsigned char *createSXSrPacket(const QString &str, int &bufferLen);
 
 };
 
